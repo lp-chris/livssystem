@@ -1,0 +1,19 @@
+# Next.js
+app/.next/
+app/out/
+app/node_modules/
+
+# Env
+app/.env
+app/.env.local
+app/.env.*.local
+
+# Misc
+.DS_Store
+*.pem
+npm-debug.log*
+*.tsbuildinfo
+app/next-env.d.ts
+
+# Design-filer (store binærer)
+Livssystem design brief/

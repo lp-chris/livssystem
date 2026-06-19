@@ -1,0 +1,121 @@
+# CLAUDE.md – Livssystem
+
+Dette er kontekstfilen for prosjektet. Les den ved start av hver økt. Den definerer hva vi bygger, hvordan, og i hvilken rekkefølge. To andre dokumenter finnes: `livssystem-spec.md` (full kravspec) og `livssystem-design-brief.md` + eksporterte design-filer (visuell retning). Denne filen er den korte sannheten.
+
+---
+
+## Hva vi bygger
+
+Et personlig, samlet livssystem for én bruker. Håndterer oppgaver, prosjekter, milepæler og rutiner under fire livsdomener, pluss et bibliotek (notater, sitater, bøker). Kjernen er **friksjonsfri fangst**: å legge inn noe – som regel via tale fra mobil – skal ta sekunder, og AI ruter det automatisk til riktig sted.
+
+Mobil-først. Web-app lagret på iPhone-hjemskjerm (PWA). Én bruker, hele appen bak innlogging.
+
+## Den hellige regelen
+
+**Fangst-flyten er hele poenget. Alt annet er sekundært.** Vi bygger ikke videre forbi fangst-fasen før fangst funker sømløst fra mobil, deployet og testet i ekte bruk. Ikke foreslå å hoppe til "kule" funksjoner før kjernen er i daglig bruk.
+
+---
+
+## Stack
+
+- **Frontend + backend:** Next.js (App Router, API-ruter for backend)
+- **Database:** PostgreSQL
+- **ORM:** Drizzle
+- **Hosting:** Railway
+- **Kildekontroll:** GitHub
+- **AI:** Anthropic API (omskriving + ruting av fangst) + transkripsjon (Whisper e.l.)
+- **Varsler:** Pushover (API)
+- **Kalender:** Google Calendar API (KUN lesing, read-only)
+- **Auth:** Brukernavn/passord + sesjon. Én bruker.
+
+Lokalt først. Deploy til Railway allerede etter fangst-fasen for ekte mobiltesting.
+
+---
+
+## Datamodell
+
+Hierarki:
+```
+Domene (4 faste: Meg, Oss, Stall, Hest)
+  └── Prosjekt (har sluttdato)  ELLER  Område (løpende)
+        └── Milepæl (valgfri, gir %-fremdrift på prosjekt)
+              └── Oppgave
+Rutine (egen entitet, knyttet til domene – IKKE et domene)
+Bibliotek (notat / sitat / bok – separat fra hierarkiet)
+```
+
+Tabeller (utgangspunkt – finpuss ved behov):
+
+- **domains**: id, navn (Meg|Oss|Stall|Hest), farge, rekkefølge
+- **projects**: id, domain_id, navn, beskrivelse, type (`prosjekt`|`område`), status, start_date, end_date (null for område), opprettet, sist_rørt_at
+- **milestones**: id, project_id, navn, forfall, fullført, rekkefølge
+- **tasks**: id, domain_id, project_id (null), milestone_id (null), tittel, notat (markdown), prioritet, forfall, påminnelse_at, topp3 (bool), tilbakevendende-regel, neste_forekomst, status (`åpen`|`gjort`), opprettet, fullført_at
+- **routines**: id, domain_id (null), navn, beskrivelse, tidspunkt (`morgen`|`ettermiddag`|`kveld`|`når_som_helst`), klokkeslett (null), type (`daglig`|`tidsbegrenset`), varighet_dager (null), start_date, send_varsel
+- **routine_logs**: id, routine_id, dato, fullført
+- **library_items**: id, type (`notat`|`sitat`|`bok`), tittel/innhold, kilde, tags (array), flagget_for_review, review_dato, favoritt, opprettet, + bok-felt (forfatter, omslag_url, lese_status, format, startet, fullført, rating, isbn, sammendrag)
+- **library_thoughts**: id, item_id, tekst, opprettet (flere tanker per sitat)
+- **captures**: id, rå_tekst, tolket_json, rutet_til (type+id), status, opprettet
+
+Norsk i UI-labels og enum-verdier.
+
+---
+
+## Domener (kontekst)
+
+- **Meg** – personlig: helse, trening, rutiner, lesing, utvikling
+- **Oss** – familie og hjem
+- **Stall** – Stall Engås: rideskole, drift, kurs
+- **Hest** – egne hester: trening, konkurranse, avl
+
+Habits og trening er rutiner under Meg, ikke eget domene.
+
+---
+
+## Fangst-flyt (kjernen)
+
+Inngang A – **iOS Shortcut** (fart): tar opp tale → `POST /api/capture` → kort bekreftelse tilbake.
+Inngang B – **Mobil web-app** (fart + redigering): mikrofon-knapp eller tekstfelt → samme endepunkt → resultat i "nylig lagt til".
+
+Server `/api/capture`:
+1. Hvis lyd: transkriber.
+2. Send tekst til Anthropic API med ruting-prompt: rens fyllord, klassifiser (oppgave/rutine/notat/sitat/bok), trekk ut domene, prosjekt, forfall, klokkeslett, prioritet. Standard: legg til påminnelse automatisk med mindre annet sies.
+3. Lagre ferdig rutet i riktig tabell.
+4. Skriv rad i `captures`.
+5. Returner kvittering.
+
+**Ruting-filosofi:** AI ruter automatisk uten bekreftelse i øyeblikket, MEN hver fangst er synlig i "nylig lagt til" så feilruting fanges i ettertid. Lavest friksjon UTEN at noe forsvinner usett.
+
+---
+
+## Skjermer
+
+- **I dag** (hjemskjerm, viktigst): fremtredende fangst-knapp, topp 3, dagens rutiner m/streak, kalender i dag (read-only), det som haster, resurfacing (ett roterende sitat/notat daglig). Sekundært bak ett tapp: slipping, til review. Skal være ROLIG, ikke en vat av ting.
+- **Oppgaver**: liste sortert på forfall, filtre, detalj med koblinger.
+- **Prosjekter**: prosjekter vs. områder per domene, milepæler m/%-fremdrift, sjekklister, aktivitetslogg.
+- **Rutiner**: daglige m/streak+graf, tidsbegrensede streaks, arkiv.
+- **Bibliotek**: notater/sitater/bøker, sitat med flere tanker, bok med metadata+høydepunkter.
+- **Innstillinger**: integrasjonsstatus, kalender-sync, tidssone.
+
+Følg de eksporterte design-filene for utseende. Lyst, rent, skandinavisk. Dempede domenefarger som prikk/kantstripe, ikke flatefyll.
+
+---
+
+## Byggerekkefølge (følg denne, ikke hopp)
+
+1. **Skjelett:** Next.js + Drizzle + Postgres lokalt. Domener, prosjekter, oppgaver. Manuell oppretting. Auth. Bevis at stacken kjører.
+2. **Fangst:** `/api/capture` med Anthropic-ruting (tekst først, lyd etterpå). "Nylig lagt til"-kvittering. iOS Shortcut. **Deploy til Railway og test fra mobil. STOPP her til dette funker sømløst.**
+3. **Rutiner:** streaks, logg, graf.
+4. **I dag komplett:** topp 3, slipping, resurfacing, review, Google Calendar read-only.
+5. **Bibliotek:** notater/sitater/bøker + resurfacing-kobling.
+6. **Varsler + deploy:** Pushover, PWA på hjemskjerm.
+
+Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
+
+---
+
+## Arbeidsmåte
+
+- Bygg én fase ferdig og testet før neste.
+- Hold endringer små og testbare. Commit ofte til GitHub.
+- Spør hvis noe i datamodellen er uklart heller enn å gjette stort.
+- Norsk i alt brukervendt.
