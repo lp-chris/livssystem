@@ -12,7 +12,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export function getPasswordHash(): string {
-  const hash = process.env.ADMIN_PASSWORD_HASH;
-  if (!hash) throw new Error("ADMIN_PASSWORD_HASH ikke satt");
-  return hash;
+  const b64 = process.env.ADMIN_PASSWORD_HASH;
+  if (!b64) throw new Error("ADMIN_PASSWORD_HASH ikke satt");
+  return Buffer.from(b64, "base64").toString("utf8");
 }

@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
     await session.save();
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error("Login-feil:", err);
     return NextResponse.json({ error: "Serverfeil" }, { status: 500 });
   }
 }

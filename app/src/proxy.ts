@@ -8,9 +8,9 @@ export async function proxy(req: NextRequest) {
 
   const isLoggedIn = session.isLoggedIn === true;
   const isLoginPage = req.nextUrl.pathname === "/login";
-  const isApiAuth = req.nextUrl.pathname.startsWith("/api/auth");
+  const isApi = req.nextUrl.pathname.startsWith("/api/");
 
-  if (isApiAuth) return res;
+  if (isApi) return res;
   if (!isLoggedIn && !isLoginPage) {
     return NextResponse.redirect(new URL("/login", req.url));
   }

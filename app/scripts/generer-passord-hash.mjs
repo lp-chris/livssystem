@@ -1,6 +1,7 @@
 /**
  * Bruk: node scripts/generer-passord-hash.mjs DITTPASSORD
  * Kopier outputen inn i .env.local som ADMIN_PASSWORD_HASH
+ * (base64-kodet for å unngå $-tegn som Next.js feiltolker)
  */
 import bcrypt from "bcryptjs";
 
@@ -11,4 +12,5 @@ if (!passord) {
 }
 
 const hash = await bcrypt.hash(passord, 12);
-console.log(hash);
+const b64 = Buffer.from(hash).toString("base64");
+console.log(b64);
