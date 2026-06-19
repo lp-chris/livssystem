@@ -4,20 +4,26 @@ import { db } from "@/db";
 import { domains } from "@/db/schema";
 import { asc } from "drizzle-orm";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
+import FangstSeksjon from "@/components/FangstSeksjon";
 
 export default async function Hjem() {
-  const alleDomener = await db.select().from(domains).orderBy(asc(domains.rekkefølge));
+  const alleDomener = await db
+    .select()
+    .from(domains)
+    .orderBy(asc(domains.rekkefølge));
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
+    <main className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Livssystem</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-semibold text-gray-900">Livssystem</h1>
           <LoggUtKnapp />
         </div>
 
-        <section>
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+        <FangstSeksjon />
+
+        <section className="mt-6">
+          <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
             Domener
           </h2>
           <div className="space-y-2">
@@ -27,23 +33,16 @@ export default async function Hjem() {
                 className="flex items-center gap-3 bg-white rounded-lg px-4 py-3 shadow-sm"
               >
                 <span
-                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: d.farge }}
                 />
-                <span className="text-gray-900 font-medium">{d.navn}</span>
+                <span className="text-gray-900 text-sm font-medium">
+                  {d.navn}
+                </span>
               </div>
             ))}
           </div>
-          {alleDomener.length === 0 && (
-            <p className="text-gray-500 text-sm">
-              Ingen domener funnet. Kjør seed-scriptet.
-            </p>
-          )}
         </section>
-
-        <p className="mt-8 text-xs text-gray-400 text-center">
-          Stack: Next.js · Drizzle · PostgreSQL · iron-session ✓
-        </p>
       </div>
     </main>
   );
