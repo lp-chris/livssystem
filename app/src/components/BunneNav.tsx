@@ -34,6 +34,8 @@ export default function BunneNav() {
         const aktiv =
           item.href === "/"
             ? pathname === "/"
+            : item.href === "/bibliotek"
+            ? pathname.startsWith("/bibliotek") || pathname.startsWith("/journal")
             : pathname.startsWith(item.href);
 
         return (

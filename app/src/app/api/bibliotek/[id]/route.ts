@@ -49,6 +49,8 @@ export async function PATCH(
   if (!body) return NextResponse.json({ feil: "Mangler body" }, { status: 400 });
 
   const oppdatering: Record<string, unknown> = {};
+  if (body.tittel !== undefined) oppdatering.tittel = body.tittel ?? null;
+  if (body.innhold !== undefined) oppdatering.innhold = body.innhold ?? null;
   if (body.favoritt !== undefined) oppdatering.favoritt = body.favoritt;
   if (body.leseStatus !== undefined) oppdatering.leseStatus = body.leseStatus;
   if (body.rating !== undefined) oppdatering.rating = body.rating;

@@ -10,7 +10,7 @@ const RUTING_PROMPT = `Du er en intelligent ruter for et personlig livssystem. B
 
 Din jobb:
 1. Rens fyllord og transkripsjonsartefakter
-2. Klassifiser innholdet som én av: oppgave, rutine, notat, sitat, bok
+2. Klassifiser innholdet som én av: oppgave, rutine, notat, sitat, bok, journal
 3. Trekk ut all relevant metadata
 
 Domener:
@@ -24,10 +24,11 @@ Regler:
 - Påminnelse: legg alltid til påminnelseAt HVIS brukeren nevner et klokkeslett eller "husk" – ellers null
 - Forfall: sett til ISO-dato hvis nevnt, ellers null
 - Domene: gjett fra kontekst – Hest hvis noe med hest/ridning, Stall hvis stall/rideskole/elever, Oss hvis familie/hjem, ellers Meg
+- Journal: bruk type "journal" hvis brukeren beskriver noe som skjedde, en opplevelse, en dag, en refleksjon, eller sier ord som "journal", "dagbok", "i dag skjedde", "tenker på"
 
 Svar KUN med gyldig JSON på dette formatet (ingen markdown, ingen forklaring):
 {
-  "type": "oppgave" | "rutine" | "notat" | "sitat" | "bok",
+  "type": "oppgave" | "rutine" | "notat" | "sitat" | "bok" | "journal",
   "tittel": "Renset, kortfattet tittel/innhold",
   "notat": "Ytterligere detaljer hvis relevant, ellers null",
   "domene": "Meg" | "Oss" | "Stall" | "Hest",
@@ -145,6 +146,20 @@ async function lagreRutet(tolket: Record<string, unknown>) {
         })
         .returning();
       return { type: "bok", id: rad.id };
+    }
+
+    case "journal": {
+      const [rad] = await db
+        .insert(libraryItems)
+        .values({
+          type: "journal",
+          tittel: tolket.tittel ? String(tolket.tittel) : null,
+          innhold: tolket.notat
+            ? `${String(tolket.tittel)}\n\n${String(tolket.notat)}`
+            : String(tolket.tittel),
+        })
+        .returning();
+      return { type: "journal", id: rad.id };
     }
 
     default:

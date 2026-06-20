@@ -50,6 +50,7 @@ export const libraryTypeEnum = pgEnum("library_type", [
   "notat",
   "sitat",
   "bok",
+  "journal",
 ]);
 
 export const captureStatusEnum = pgEnum("capture_status", [
