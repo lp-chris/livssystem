@@ -56,6 +56,11 @@ async function rutMedAI(tekst: string) {
     }
   }
 
+  // Strip markdown code blocks if model wraps response despite instructions
+  if (jsonTekst.startsWith("```")) {
+    jsonTekst = jsonTekst.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
+  }
+
   return JSON.parse(jsonTekst);
 }
 

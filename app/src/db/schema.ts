@@ -107,6 +107,7 @@ export const tasks = pgTable("tasks", {
   status: taskStatusEnum("status").notNull().default("åpen"),
   opprettet: timestamp("opprettet").notNull().defaultNow(),
   fullførtAt: timestamp("fullfort_at"),
+  varsletAt: timestamp("varslet_at"),
 });
 
 export const routines = pgTable("routines", {
