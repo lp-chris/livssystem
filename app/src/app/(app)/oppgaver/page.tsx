@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { tasks } from "@/db/schema";
 import { eq, and, isNull, or } from "drizzle-orm";
 import OppgaveKort from "@/components/OppgaveKort";
+import NyOppgaveKnapp from "@/components/NyOppgaveKnapp";
 
 export default async function OppgaverSide() {
   const alleÅpne = await db
@@ -17,13 +18,16 @@ export default async function OppgaverSide() {
 
   return (
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
-      <header className="mb-8">
-        <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
-          Oppgaver
-        </h1>
-        <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
-          {alleÅpne.length} åpne
-        </p>
+      <header className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
+            Oppgaver
+          </h1>
+          <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
+            {alleÅpne.length} åpne
+          </p>
+        </div>
+        <NyOppgaveKnapp />
       </header>
 
       {alleÅpne.length === 0 && (
