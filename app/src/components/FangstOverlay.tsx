@@ -8,7 +8,7 @@ type Modus = "mikrofon" | "tekst";
 
 type Kvittering = {
   rutetTil: { type: string } | null;
-  capture: { råTekst: string };
+  capture: { tittel?: string; innhold?: string; råTekst?: string };
 };
 
 const RUTETYPE_ETIKETT: Record<string, string> = {
@@ -228,8 +228,7 @@ export default function FangstOverlay() {
                   className="text-sm leading-relaxed"
                   style={{ color: "rgba(255,255,255,0.5)" }}
                 >
-                  {kvittering.capture.råTekst.slice(0, 80)}
-                  {kvittering.capture.råTekst.length > 80 ? "…" : ""}
+                  {(kvittering.capture.tittel ?? kvittering.capture.innhold ?? "").slice(0, 80)}
                 </p>
               </div>
             </div>
