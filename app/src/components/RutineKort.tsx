@@ -13,11 +13,7 @@ type Rutine = {
   fullførtIdag: boolean;
 };
 
-export default function RutineKort({
-  rutine: initial,
-}: {
-  rutine: Rutine;
-}) {
+export default function RutineKort({ rutine: initial }: { rutine: Rutine }) {
   const [rutine, setRutine] = useState(initial);
   const [laster, setLaster] = useState(false);
 
@@ -46,32 +42,44 @@ export default function RutineKort({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <div className="flex items-start justify-between gap-3 mb-3">
+    <div
+      className="rounded-[22px] p-4"
+      style={{
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-gray-900 text-sm">{rutine.navn}</div>
+          <div className="text-sm font-medium" style={{ color: "var(--ink)" }}>
+            {rutine.navn}
+          </div>
           {rutine.beskrivelse && (
-            <div className="text-xs text-gray-400 mt-0.5 truncate">
+            <div className="text-xs mt-0.5 truncate" style={{ color: "var(--muted)" }}>
               {rutine.beskrivelse}
             </div>
           )}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {rutine.streak > 0 && (
-            <span className="text-xs font-semibold text-orange-500">
-              {rutine.streak}🔥
+            <span className="text-xs font-semibold" style={{ color: "var(--hest)" }}>
+              {rutine.streak} 🔥
             </span>
           )}
           <button
             onClick={toggleFullfor}
             disabled={laster}
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors min-w-[44px] min-h-[44px] ${
-              rutine.fullførtIdag
-                ? "bg-green-500 text-white"
-                : "bg-gray-100 text-gray-400"
-            }`}
+            aria-label={rutine.fullførtIdag ? "Angre" : "Fullfør"}
+            className="flex items-center justify-center rounded-full transition-all min-w-[44px] min-h-[44px]"
+            style={{
+              width: 32,
+              height: 32,
+              backgroundColor: rutine.fullførtIdag ? "var(--stall)" : "transparent",
+              border: rutine.fullførtIdag ? "none" : "2px solid var(--border)",
+              color: rutine.fullførtIdag ? "white" : "var(--muted)",
+            }}
           >
-            {rutine.fullførtIdag ? "✓" : "○"}
+            ✓
           </button>
         </div>
       </div>
@@ -82,9 +90,11 @@ export default function RutineKort({
           <div
             key={dag.dato}
             title={dag.dato}
-            className={`flex-1 h-2 rounded-sm ${
-              dag.fullført ? "bg-green-400" : "bg-gray-100"
-            }`}
+            className="flex-1 rounded-sm"
+            style={{
+              height: 6,
+              backgroundColor: dag.fullført ? "var(--stall)" : "var(--border)",
+            }}
           />
         ))}
       </div>

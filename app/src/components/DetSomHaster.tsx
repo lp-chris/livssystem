@@ -17,11 +17,7 @@ function forfallEtikett(forfall: string | null): string {
   return forfall;
 }
 
-export default function DetSomHaster({
-  oppgaver: init,
-}: {
-  oppgaver: Oppgave[];
-}) {
+export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }) {
   const [oppgaver, setOppgaver] = useState(init);
 
   async function markerFerdig(id: number) {
@@ -37,22 +33,39 @@ export default function DetSomHaster({
 
   return (
     <section>
-      <h2 className="text-xs font-medium text-red-400 uppercase tracking-wide mb-2">
+      <h2
+        className="text-[11px] font-bold uppercase mb-2"
+        style={{ letterSpacing: "0.12em", color: "#C28568" }}
+      >
         Haster
       </h2>
       <div className="space-y-2">
         {oppgaver.map((o) => (
           <div
             key={o.id}
-            className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm border-l-2 border-red-300"
+            className="flex items-center gap-3 px-4 py-3 rounded-[22px]"
+            style={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+              borderLeft: "3px solid #C28568",
+            }}
           >
-            <span className="flex-1 text-sm text-gray-900">{o.tittel}</span>
-            <span className="text-xs text-red-400 flex-shrink-0">
+            <span className="flex-1 text-sm" style={{ color: "var(--ink)" }}>
+              {o.tittel}
+            </span>
+            <span className="text-xs flex-shrink-0" style={{ color: "#C28568" }}>
               {forfallEtikett(o.forfall)}
             </span>
             <button
               onClick={() => markerFerdig(o.id)}
-              className="min-w-[44px] min-h-[44px] text-gray-300 hover:text-green-400 transition-colors flex items-center justify-center"
+              aria-label="Marker som gjort"
+              className="flex items-center justify-center rounded-full flex-shrink-0 transition-colors min-w-[44px] min-h-[44px]"
+              style={{
+                width: 28,
+                height: 28,
+                border: "2px solid var(--border)",
+                color: "var(--muted)",
+              }}
             >
               ✓
             </button>

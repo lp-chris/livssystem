@@ -25,9 +25,9 @@ export default function Topp3({ oppgaver: init }: { oppgaver: Oppgave[] }) {
 
   if (oppgaver.length === 0) {
     return (
-      <div className="text-xs text-gray-400 italic py-2">
-        Ingen topp 3-oppgaver satt.
-      </div>
+      <p className="text-sm italic py-2" style={{ color: "var(--muted)" }}>
+        Ingen topp 3-oppgaver satt ennå.
+      </p>
     );
   }
 
@@ -36,20 +36,36 @@ export default function Topp3({ oppgaver: init }: { oppgaver: Oppgave[] }) {
       {oppgaver.map((o, i) => (
         <div
           key={o.id}
-          className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm"
+          className="flex items-center gap-3 px-4 py-3 rounded-[22px]"
+          style={{
+            backgroundColor: "var(--card)",
+            border: "1px solid var(--border)",
+          }}
         >
-          <span className="text-xs font-bold text-indigo-400 w-4 flex-shrink-0">
+          <span
+            className="text-xs font-bold w-5 flex-shrink-0"
+            style={{ color: "var(--muted)" }}
+          >
             {i + 1}
           </span>
-          <span className="flex-1 text-sm text-gray-900">{o.tittel}</span>
+          <span className="flex-1 text-sm" style={{ color: "var(--ink)" }}>
+            {o.tittel}
+          </span>
           {o.forfall && (
-            <span className="text-xs text-gray-400 flex-shrink-0">
+            <span className="text-xs flex-shrink-0" style={{ color: "var(--muted)" }}>
               {o.forfall}
             </span>
           )}
           <button
             onClick={() => markerFerdig(o.id)}
-            className="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-300 hover:border-green-400 hover:text-green-400 transition-colors min-w-[44px] min-h-[44px]"
+            aria-label="Marker som gjort"
+            className="flex items-center justify-center rounded-full flex-shrink-0 transition-colors min-w-[44px] min-h-[44px]"
+            style={{
+              width: 28,
+              height: 28,
+              border: "2px solid var(--border)",
+              color: "var(--muted)",
+            }}
           >
             ✓
           </button>

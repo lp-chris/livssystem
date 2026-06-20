@@ -10,20 +10,14 @@ type RutinePreview = {
   fullførtIdag: boolean;
 };
 
-export default function DagensRutiner({
-  rutiner: init,
-}: {
-  rutiner: RutinePreview[];
-}) {
+export default function DagensRutiner({ rutiner: init }: { rutiner: RutinePreview[] }) {
   const [rutiner, setRutiner] = useState(init);
 
   async function toggle(id: number) {
     const svar = await fetch(`/api/rutiner/${id}/fullfor`, { method: "POST" });
     const data = await svar.json();
     setRutiner((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, fullførtIdag: data.fullført } : r
-      )
+      prev.map((r) => (r.id === id ? { ...r, fullførtIdag: data.fullført } : r))
     );
   }
 
@@ -32,10 +26,13 @@ export default function DagensRutiner({
   return (
     <section>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+        <h2
+          className="text-[11px] font-bold uppercase"
+          style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+        >
           Rutiner i dag
         </h2>
-        <span className="text-xs text-gray-400">
+        <span className="text-xs" style={{ color: "var(--muted)" }}>
           {antallFerdig}/{rutiner.length}
         </span>
       </div>
@@ -43,22 +40,32 @@ export default function DagensRutiner({
         {rutiner.map((r) => (
           <div
             key={r.id}
-            className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm"
+            className="flex items-center gap-3 px-4 py-3 rounded-[22px]"
+            style={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+            }}
           >
             <span
-              className={`flex-1 text-sm ${
-                r.fullførtIdag ? "text-gray-400 line-through" : "text-gray-900"
-              }`}
+              className="flex-1 text-sm transition-all"
+              style={{
+                color: r.fullførtIdag ? "var(--muted)" : "var(--ink)",
+                textDecoration: r.fullførtIdag ? "line-through" : "none",
+              }}
             >
               {r.navn}
             </span>
             <button
               onClick={() => toggle(r.id)}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors min-w-[44px] min-h-[44px] ${
-                r.fullførtIdag
-                  ? "bg-green-500 text-white"
-                  : "border-2 border-gray-200 text-gray-300"
-              }`}
+              aria-label={r.fullførtIdag ? "Marker som ikke gjort" : "Marker som gjort"}
+              className="flex items-center justify-center rounded-full flex-shrink-0 transition-all min-w-[44px] min-h-[44px]"
+              style={{
+                width: 28,
+                height: 28,
+                backgroundColor: r.fullførtIdag ? "var(--stall)" : "transparent",
+                border: r.fullførtIdag ? "none" : "2px solid var(--border)",
+                color: r.fullførtIdag ? "white" : "var(--muted)",
+              }}
             >
               ✓
             </button>
@@ -67,7 +74,8 @@ export default function DagensRutiner({
       </div>
       <Link
         href="/rutiner"
-        className="block text-center text-xs text-indigo-500 mt-2 py-1"
+        className="block text-center text-xs mt-2 py-1"
+        style={{ color: "var(--muted)" }}
       >
         Se alle rutiner →
       </Link>

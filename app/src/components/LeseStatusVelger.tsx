@@ -8,13 +8,7 @@ const statuser = [
   { verdi: "fullført", etikett: "Lest" },
 ];
 
-export default function LeseStatusVelger({
-  id,
-  status: init,
-}: {
-  id: number;
-  status: string;
-}) {
+export default function LeseStatusVelger({ id, status: init }: { id: number; status: string }) {
   const [status, setStatus] = useState(init);
 
   async function endre(nyStatus: string) {
@@ -32,11 +26,12 @@ export default function LeseStatusVelger({
         <button
           key={s.verdi}
           onClick={() => endre(s.verdi)}
-          className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors min-h-[44px] ${
-            status === s.verdi
-              ? "bg-indigo-600 text-white"
-              : "bg-gray-100 text-gray-500"
-          }`}
+          className="flex-1 py-2 rounded-[14px] text-xs font-medium transition-all min-h-[44px]"
+          style={{
+            backgroundColor: status === s.verdi ? "var(--ink)" : "var(--surface)",
+            color: status === s.verdi ? "white" : "var(--muted)",
+            border: "1px solid var(--border)",
+          }}
         >
           {s.etikett}
         </button>

@@ -1,6 +1,5 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
 import { db } from "@/db";
 import { routines, routineLogs } from "@/db/schema";
 import { gte } from "drizzle-orm";
@@ -89,42 +88,42 @@ export default async function RutinerSide() {
     .filter((g) => g.rutiner.length > 0);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-gray-400 text-sm">
-              ← Hjem
-            </Link>
-            <h1 className="text-xl font-semibold text-gray-900">Rutiner</h1>
-          </div>
-          <NyRutineKnapp />
-        </div>
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+      <header className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
+          Rutiner
+        </h1>
+        <NyRutineKnapp />
+      </header>
 
-        {rutiner.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-sm mb-2">Ingen rutiner ennå.</p>
-            <p className="text-gray-400 text-xs">
-              Fang en rutine via fangst-feltet på hjemsiden, eller trykk +.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {gruppert.map(({ tid, rutiner: gruppe }) => (
-              <section key={tid}>
-                <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
-                  {tidspunktEtikett[tid]}
-                </h2>
-                <div className="space-y-3">
-                  {gruppe.map((r) => (
-                    <RutineKort key={r.id} rutine={r} />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
-      </div>
+      {rutiner.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-sm mb-1" style={{ color: "var(--muted)" }}>
+            Ingen rutiner ennå.
+          </p>
+          <p className="text-xs" style={{ color: "var(--muted)" }}>
+            Fang en rutine via mikrofon-knappen, eller trykk +.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {gruppert.map(({ tid, rutiner: gruppe }) => (
+            <section key={tid}>
+              <h2
+                className="text-[11px] font-bold uppercase mb-3"
+                style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+              >
+                {tidspunktEtikett[tid]}
+              </h2>
+              <div className="space-y-3">
+                {gruppe.map((r) => (
+                  <RutineKort key={r.id} rutine={r} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

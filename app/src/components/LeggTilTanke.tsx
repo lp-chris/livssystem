@@ -33,12 +33,21 @@ export default function LeggTilTanke({ itemId }: { itemId: number }) {
         placeholder="Legg til en tanke…"
         rows={2}
         disabled={laster}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full rounded-[16px] px-4 py-3 text-sm resize-none focus:outline-none"
+        style={{
+          backgroundColor: "var(--surface)",
+          border: "1px solid var(--border)",
+          color: "var(--ink)",
+        }}
       />
       <button
         type="submit"
         disabled={!tekst.trim() || laster}
-        className="w-full bg-indigo-600 text-white rounded-lg py-3 text-sm font-medium disabled:opacity-40 min-h-[44px]"
+        className="w-full rounded-[16px] py-3 text-sm font-medium transition-opacity disabled:opacity-30 min-h-[44px]"
+        style={{
+          backgroundColor: "var(--ink)",
+          color: "white",
+        }}
       >
         {laster ? "Lagrer…" : "Legg til tanke"}
       </button>

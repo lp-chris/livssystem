@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 
-export default function FavorittKnapp({
-  id,
-  favoritt: init,
-}: {
-  id: number;
-  favoritt: boolean;
-}) {
+export default function FavorittKnapp({ id, favoritt: init }: { id: number; favoritt: boolean }) {
   const [favoritt, setFavoritt] = useState(init);
 
   async function toggle() {
@@ -24,9 +18,9 @@ export default function FavorittKnapp({
   return (
     <button
       onClick={toggle}
-      className={`text-2xl min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors ${
-        favoritt ? "text-yellow-400" : "text-gray-200"
-      }`}
+      aria-label={favoritt ? "Fjern fra favoritter" : "Legg til favoritter"}
+      className="flex items-center justify-center min-w-[44px] min-h-[44px] text-2xl transition-colors"
+      style={{ color: favoritt ? "var(--hest)" : "var(--border)" }}
     >
       ★
     </button>

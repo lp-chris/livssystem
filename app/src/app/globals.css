@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+:root {
+  --bg: #E6E3DC;
+  --surface: #F4F2EC;
+  --border: #EDEAE2;
+  --ink: #2B2A27;
+  --ink-2: #46443F;
+  --ink-3: #76726A;
+  --muted: #A39E93;
+  --card: #ffffff;
+
+  --meg: #7C8A99;
+  --oss: #C28568;
+  --stall: #899A78;
+  --hest: #BE9A55;
+
+  --nav-h: 96px;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes puls-ring {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.2); }
+}
+
+@keyframes puls-ring2 {
+  0% { opacity: 0.4; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.8); }
+}
+
+.puls-ring {
+  animation: puls-ring 1.4s ease-out infinite;
+}
+
+.puls-ring2 {
+  animation: puls-ring2 1.4s ease-out 0.4s infinite;
+}

@@ -25,15 +25,29 @@ export default function Resurfacing({ item }: { item: LibraryItem | null }) {
       : null;
 
   return (
-    <section className="bg-indigo-50 rounded-xl px-4 py-4">
-      <div className="text-xs font-medium text-indigo-400 uppercase tracking-wide mb-2">
+    <section
+      className="rounded-[22px] px-5 py-5"
+      style={{ backgroundColor: "#EBE6DB" }}
+    >
+      <p
+        className="text-[11px] font-bold uppercase mb-3"
+        style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+      >
         {item.type === "sitat" ? "Sitat" : item.type === "bok" ? "Bok" : "Notat"}
-      </div>
-      <p className="text-sm text-gray-800 leading-relaxed">
+      </p>
+      <p
+        className="text-base leading-relaxed"
+        style={{
+          color: "var(--ink-2)",
+          fontStyle: item.type === "sitat" ? "italic" : "normal",
+        }}
+      >
         {item.type === "sitat" ? `"${tekst}"` : tekst}
       </p>
       {undertekst && (
-        <p className="text-xs text-gray-400 mt-1">— {undertekst}</p>
+        <p className="text-sm mt-2" style={{ color: "var(--muted)" }}>
+          — {undertekst}
+        </p>
       )}
     </section>
   );

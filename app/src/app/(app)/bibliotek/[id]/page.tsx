@@ -9,12 +9,6 @@ import FavorittKnapp from "@/components/FavorittKnapp";
 import LeggTilTanke from "@/components/LeggTilTanke";
 import LeseStatusVelger from "@/components/LeseStatusVelger";
 
-const leseStatusEtikett: Record<string, string> = {
-  vil_lese: "Vil lese",
-  leser: "Leser nå",
-  fullført: "Lest",
-};
-
 export default async function BibliotekDetaljSide({
   params,
 }: {
@@ -37,31 +31,36 @@ export default async function BibliotekDetaljSide({
     .orderBy(libraryThoughts.opprettet);
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-8">
-      <div className="bg-white border-b border-gray-100 px-4 py-4">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <Link href="/bibliotek" className="text-gray-400 text-sm">
-            ← Bibliotek
-          </Link>
-          <FavorittKnapp id={item.id} favoritt={item.favoritt} />
-        </div>
-      </div>
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+      {/* Tilbake + favoritt */}
+      <header className="flex items-center justify-between mb-8">
+        <Link
+          href="/bibliotek"
+          className="text-sm flex items-center gap-1 min-h-[44px]"
+          style={{ color: "var(--muted)" }}
+        >
+          ← Bibliotek
+        </Link>
+        <FavorittKnapp id={item.id} favoritt={item.favoritt} />
+      </header>
 
-      <div className="max-w-md mx-auto px-4 pt-5 space-y-5">
+      <div className="space-y-6">
         {/* Bok */}
         {item.type === "bok" && (
           <>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold" style={{ color: "var(--ink)" }}>
                 {item.tittel}
               </h1>
               {item.forfatter && (
-                <p className="text-sm text-gray-500 mt-1">{item.forfatter}</p>
+                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                  {item.forfatter}
+                </p>
               )}
             </div>
             <LeseStatusVelger id={item.id} status={item.leseStatus ?? "vil_lese"} />
             {item.sammendrag && (
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm leading-relaxed" style={{ color: "var(--ink-2)" }}>
                 {item.sammendrag}
               </p>
             )}
@@ -70,12 +69,20 @@ export default async function BibliotekDetaljSide({
 
         {/* Sitat */}
         {item.type === "sitat" && (
-          <div className="bg-indigo-50 rounded-xl p-5">
-            <p className="text-base text-gray-800 italic leading-relaxed">
+          <div
+            className="rounded-[22px] px-5 py-5"
+            style={{ backgroundColor: "#EBE6DB" }}
+          >
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: "var(--ink-2)", fontStyle: "italic" }}
+            >
               "{item.innhold}"
             </p>
             {item.kilde && (
-              <p className="text-sm text-gray-500 mt-3">— {item.kilde}</p>
+              <p className="text-sm mt-3" style={{ color: "var(--muted)" }}>
+                — {item.kilde}
+              </p>
             )}
           </div>
         )}
@@ -83,21 +90,27 @@ export default async function BibliotekDetaljSide({
         {/* Notat */}
         {item.type === "notat" && (
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-3">
+            <h1 className="text-xl font-semibold mb-3" style={{ color: "var(--ink)" }}>
               {item.tittel}
             </h1>
             {item.innhold && (
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+              <p
+                className="text-sm leading-relaxed whitespace-pre-wrap"
+                style={{ color: "var(--ink-2)" }}
+              >
                 {item.innhold}
               </p>
             )}
           </div>
         )}
 
-        {/* Tanker (sitater og notater) */}
+        {/* Tanker */}
         {(item.type === "sitat" || item.type === "notat") && (
           <section>
-            <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">
+            <h2
+              className="text-[11px] font-bold uppercase mb-3"
+              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+            >
               Tanker
             </h2>
             {tanker.length > 0 && (
@@ -105,10 +118,16 @@ export default async function BibliotekDetaljSide({
                 {tanker.map((t) => (
                   <div
                     key={t.id}
-                    className="bg-white rounded-xl px-4 py-3 shadow-sm"
+                    className="rounded-[18px] px-4 py-3"
+                    style={{
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
+                    }}
                   >
-                    <p className="text-sm text-gray-800">{t.tekst}</p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-sm" style={{ color: "var(--ink)" }}>
+                      {t.tekst}
+                    </p>
+                    <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>
                       {new Date(t.opprettet).toLocaleDateString("nb-NO")}
                     </p>
                   </div>
@@ -119,7 +138,7 @@ export default async function BibliotekDetaljSide({
           </section>
         )}
 
-        <p className="text-xs text-gray-300 text-center">
+        <p className="text-xs text-center" style={{ color: "var(--border)" }}>
           Lagt til{" "}
           {new Date(item.opprettet).toLocaleDateString("nb-NO", {
             day: "numeric",
