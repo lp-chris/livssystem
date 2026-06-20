@@ -12,7 +12,16 @@ type Oppgave = {
   topp3: boolean;
   domainId: number | null;
   status: string;
+  tilbakevendendeRegel: string | null;
 };
+
+const GJENTAGELSE_VALG = [
+  { verdi: null, etikett: "Aldri" },
+  { verdi: "daglig", etikett: "Daglig" },
+  { verdi: "ukentlig", etikett: "Ukentlig" },
+  { verdi: "hver-14-dager", etikett: "Annenhver uke" },
+  { verdi: "månedlig", etikett: "Månedlig" },
+];
 
 type Domene = {
   id: number;
@@ -250,6 +259,38 @@ export default function OppgaveDetalj({
             {oppgave.topp3 ? "Ja" : "Nei"}
           </span>
         </button>
+      </div>
+
+      {/* Gjentagelse */}
+      <div className="mb-8">
+        <label
+          className="block text-[11px] font-bold uppercase mb-3"
+          style={{ letterSpacing: "0.1em", color: "var(--muted)" }}
+        >
+          Gjentas
+        </label>
+        <div className="flex gap-2 flex-wrap">
+          {GJENTAGELSE_VALG.map((v) => {
+            const aktiv = oppgave.tilbakevendendeRegel === v.verdi;
+            return (
+              <button
+                key={v.verdi ?? "aldri"}
+                onClick={() => {
+                  oppdater("tilbakevendendeRegel", v.verdi);
+                  lagre("tilbakevendendeRegel", v.verdi);
+                }}
+                className="px-4 py-2 rounded-full text-sm font-medium min-h-[44px] transition-all"
+                style={{
+                  backgroundColor: aktiv ? "var(--ink)" : "var(--surface)",
+                  color: aktiv ? "white" : "var(--ink-3)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                {v.etikett}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Lagrer-indikator */}
