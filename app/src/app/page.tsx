@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { db } from "@/db";
 import { domains } from "@/db/schema";
 import { asc } from "drizzle-orm";
+import Link from "next/link";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
 import FangstSeksjon from "@/components/FangstSeksjon";
 
@@ -21,6 +22,22 @@ export default async function Hjem() {
         </div>
 
         <FangstSeksjon />
+
+        {/* Navigasjon */}
+        <nav className="mt-6 grid grid-cols-2 gap-2">
+          <Link
+            href="/rutiner"
+            className="bg-white rounded-xl shadow-sm px-4 py-3 text-sm font-medium text-gray-700 text-center"
+          >
+            Rutiner
+          </Link>
+          <Link
+            href="/oppgaver"
+            className="bg-white rounded-xl shadow-sm px-4 py-3 text-sm font-medium text-gray-400 text-center"
+          >
+            Oppgaver
+          </Link>
+        </nav>
 
         <section className="mt-6">
           <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
