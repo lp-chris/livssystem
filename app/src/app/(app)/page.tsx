@@ -9,6 +9,7 @@ import Topp3 from "@/components/Topp3";
 import DetSomHaster from "@/components/DetSomHaster";
 import DagensRutiner from "@/components/DagensRutiner";
 import Resurfacing from "@/components/Resurfacing";
+import KalenderIDag from "@/components/KalenderIDag";
 
 function datoStreng(d: Date) {
   return d.toISOString().split("T")[0];
@@ -115,6 +116,9 @@ export default async function IDag() {
         {dagensRutiner.length > 0 && (
           <DagensRutiner rutiner={dagensRutiner} />
         )}
+
+        {/* Kalender */}
+        <KalenderIDag />
 
         {/* Resurfacing */}
         <Resurfacing item={resurfacingItem} />
