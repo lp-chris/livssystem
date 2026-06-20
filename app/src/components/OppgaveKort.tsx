@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 type Oppgave = {
   id: number;
@@ -78,7 +79,7 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
           ✓
         </button>
 
-        <div className="flex-1 min-w-0">
+        <Link href={`/oppgaver/${oppgave.id}`} className="flex-1 min-w-0 min-h-[44px] flex flex-col justify-center">
           <p className="text-sm" style={{ color: "var(--ink)" }}>
             {oppgave.tittel}
           </p>
@@ -90,7 +91,7 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
               {forfallTekst(oppgave.forfall)}
             </p>
           )}
-        </div>
+        </Link>
 
         <button
           onClick={toggleTopp3}
