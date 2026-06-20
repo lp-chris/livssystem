@@ -1,0 +1,23 @@
+{
+  "name": "Livssystem",
+  "short_name": "Livssystem",
+  "description": "Personlig livssystem",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E6E3DC",
+  "theme_color": "#2B2A27",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
