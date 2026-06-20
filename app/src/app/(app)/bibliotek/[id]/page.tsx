@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import FavorittKnapp from "@/components/FavorittKnapp";
 import LeggTilTanke from "@/components/LeggTilTanke";
 import LeseStatusVelger from "@/components/LeseStatusVelger";
+import SlettBibliotekElement from "@/components/SlettBibliotekElement";
 
 export default async function BibliotekDetaljSide({
   params,
@@ -146,6 +147,8 @@ export default async function BibliotekDetaljSide({
             year: "numeric",
           })}
         </p>
+
+        <SlettBibliotekElement id={item.id} />
       </div>
     </main>
   );

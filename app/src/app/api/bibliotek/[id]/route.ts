@@ -23,6 +23,20 @@ export async function GET(
   return NextResponse.json({ item, tanker });
 }
 
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const itemId = parseInt(id);
+  if (isNaN(itemId)) return NextResponse.json({ feil: "Ugyldig id" }, { status: 400 });
+
+  await db.delete(libraryThoughts).where(eq(libraryThoughts.itemId, itemId));
+  await db.delete(libraryItems).where(eq(libraryItems.id, itemId));
+
+  return NextResponse.json({ ok: true });
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
