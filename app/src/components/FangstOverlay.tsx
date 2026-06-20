@@ -135,7 +135,11 @@ export default function FangstOverlay() {
   }
 
   function stoppLytting() {
-    recognitionRef.current?.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+      recognitionRef.current = null;
+    }
+    setFase("venter");
   }
 
   function sendTekst(e: React.FormEvent) {
