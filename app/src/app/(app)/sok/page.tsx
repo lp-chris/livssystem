@@ -46,7 +46,7 @@ export default function SokSide() {
   const ingenResultater = spørring.length >= 2 && !laster && oppgaver.length === 0 && bibliotek.length === 0;
 
   return (
-    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-3xl md:px-10 md:pt-10">
       <header className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.back()}

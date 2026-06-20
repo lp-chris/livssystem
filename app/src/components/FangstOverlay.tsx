@@ -157,13 +157,10 @@ export default function FangstOverlay() {
       <button
         onClick={åpne}
         aria-label="Fang inn noe nytt"
-        className="fixed z-50 flex items-center justify-center rounded-full shadow-lg transition-transform active:scale-95"
+        className="fixed z-50 flex items-center justify-center rounded-full shadow-lg transition-transform active:scale-95 bottom-[63px] left-1/2 -translate-x-1/2 md:bottom-8 md:right-8 md:left-auto md:translate-x-0"
         style={{
           width: 66,
           height: 66,
-          bottom: 63,
-          left: "50%",
-          transform: "translateX(-50%)",
           backgroundColor: "var(--ink)",
           color: "white",
           fontSize: 28,

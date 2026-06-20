@@ -36,7 +36,7 @@ export default async function ProsjekterSide() {
   }));
 
   return (
-    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-3xl md:px-10 md:pt-10">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
           Prosjekter

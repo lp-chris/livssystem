@@ -16,7 +16,7 @@ export default function BunneNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex items-start justify-around pt-3 z-40"
+      className="md:hidden fixed bottom-0 left-0 right-0 flex items-start justify-around pt-3 z-40"
       style={{
         height: "var(--nav-h)",
         backgroundColor: "rgba(244, 242, 236, 0.94)",

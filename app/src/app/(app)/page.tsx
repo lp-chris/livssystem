@@ -70,7 +70,7 @@ export default async function IDag() {
   });
 
   return (
-    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-none md:px-10 md:pt-10">
       {/* Hilsen */}
       <header className="mb-8 flex items-start justify-between">
         <div>
@@ -97,30 +97,34 @@ export default async function IDag() {
         </div>
       </header>
 
-      <div className="space-y-6">
-        {/* Topp 3 */}
-        <section>
-          <h2
-            className="text-[11px] font-bold uppercase mb-2"
-            style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-          >
-            Topp 3 i dag
-          </h2>
-          <Topp3 oppgaver={topp3} />
-        </section>
+      {/* Mobil: én kolonne / Desktop: to kolonner */}
+      <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+        {/* Venstre kolonne */}
+        <div className="space-y-6">
+          <section>
+            <h2
+              className="text-[11px] font-bold uppercase mb-2"
+              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+            >
+              Topp 3 i dag
+            </h2>
+            <Topp3 oppgaver={topp3} />
+          </section>
 
-        {/* Det som haster */}
-        <DetSomHaster oppgaver={hasterFiltrert} />
+          {dagensRutiner.length > 0 && (
+            <DagensRutiner rutiner={dagensRutiner} />
+          )}
+        </div>
 
-        {/* Rutiner */}
-        {dagensRutiner.length > 0 && (
-          <DagensRutiner rutiner={dagensRutiner} />
-        )}
+        {/* Høyre kolonne */}
+        <div className="space-y-6">
+          <DetSomHaster oppgaver={hasterFiltrert} />
+          <KalenderIDag />
+        </div>
+      </div>
 
-        {/* Kalender */}
-        <KalenderIDag />
-
-        {/* Resurfacing */}
+      {/* Resurfacing — full bredde under */}
+      <div className="mt-6">
         <Resurfacing item={resurfacingItem} />
       </div>
     </main>

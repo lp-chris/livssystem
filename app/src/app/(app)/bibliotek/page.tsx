@@ -31,7 +31,7 @@ export default async function BibliiotekSide() {
   const bøker = items.filter((i) => i.type === "bok");
 
   return (
-    <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
+    <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-3xl md:px-10 md:pt-10">
       <header className="mb-8">
         <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
           Bibliotek
