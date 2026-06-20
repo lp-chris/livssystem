@@ -286,7 +286,8 @@ export default function FangstOverlay() {
                     </>
                   )}
                   <button
-                    onClick={fase === "lytter" ? stoppLytting : startLytting}
+                    onClick={fase === "lytter" ? undefined : startLytting}
+                    disabled={fase === "lytter"}
                     className="relative flex items-center justify-center rounded-full transition-transform active:scale-95"
                     style={{
                       width: 100,
@@ -308,9 +309,21 @@ export default function FangstOverlay() {
                   style={{ color: "rgba(255,255,255,0.45)" }}
                 >
                   {fase === "lytter"
-                    ? "Trykk for å stoppe"
+                    ? "Snakker… stopper automatisk"
                     : "Trykk for å ta opp"}
                 </p>
+                {fase === "lytter" && (
+                  <button
+                    onClick={stoppLytting}
+                    className="px-5 py-2 rounded-full text-sm min-h-[44px]"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.07)",
+                      color: "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    Avbryt
+                  </button>
+                )}
 
                 {feil && (
                   <p
