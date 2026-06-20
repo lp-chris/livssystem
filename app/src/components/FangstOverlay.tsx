@@ -30,6 +30,7 @@ export default function FangstOverlay() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
+  const harKvittering = useRef(false);
 
   const åpne = useCallback(() => {
     setFase("venter");
@@ -44,7 +45,11 @@ export default function FangstOverlay() {
     setFase("lukket");
     setModus("mikrofon");
     setFeil(null);
-  }, []);
+    if (harKvittering.current) {
+      harKvittering.current = false;
+      router.refresh();
+    }
+  }, [router]);
 
   useEffect(() => {
     if (fase === "kvittering") {
@@ -76,8 +81,8 @@ export default function FangstOverlay() {
       if (!svar.ok) throw new Error("Serverfeil");
       const data = await svar.json();
       setKvittering(data);
+      harKvittering.current = true;
       setFase("kvittering");
-      router.refresh();
     } catch {
       setFeil("Noe gikk galt. Prøv igjen.");
       setFase("venter");

@@ -42,9 +42,8 @@ Svar KUN med gyldig JSON på dette formatet (ingen markdown, ingen forklaring):
 
 async function rutMedAI(tekst: string) {
   const response = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 1024,
-    thinking: { type: "adaptive" },
+    model: "claude-haiku-4-5",
+    max_tokens: 512,
     system: RUTING_PROMPT,
     messages: [{ role: "user", content: tekst }],
   });
