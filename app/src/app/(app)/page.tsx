@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { tasks, routines, routineLogs, libraryItems } from "@/db/schema";
 import { eq, and, lte, isNotNull, sql } from "drizzle-orm";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
+import Link from "next/link";
 import Topp3 from "@/components/Topp3";
 import DetSomHaster from "@/components/DetSomHaster";
 import DagensRutiner from "@/components/DagensRutiner";
@@ -82,7 +83,17 @@ export default async function IDag() {
             {dagString}
           </p>
         </div>
-        <LoggUtKnapp />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/sok"
+            aria-label="Søk"
+            className="flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full"
+            style={{ color: "var(--muted)", fontSize: 20 }}
+          >
+            🔍
+          </Link>
+          <LoggUtKnapp />
+        </div>
       </header>
 
       <div className="space-y-6">
