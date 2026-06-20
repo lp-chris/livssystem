@@ -1,65 +1,135 @@
 export const dynamic = "force-dynamic";
 
-import { db } from "@/db";
-import { domains } from "@/db/schema";
-import { asc } from "drizzle-orm";
 import Link from "next/link";
+import { db } from "@/db";
+import { tasks, routines, routineLogs, libraryItems } from "@/db/schema";
+import { eq, and, lte, isNotNull, gte, sql } from "drizzle-orm";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
-import FangstSeksjon from "@/components/FangstSeksjon";
+import FangstSkjema from "@/components/FangstSkjema";
+import Topp3 from "@/components/Topp3";
+import DetSomHaster from "@/components/DetSomHaster";
+import DagensRutiner from "@/components/DagensRutiner";
+import Resurfacing from "@/components/Resurfacing";
 
-export default async function Hjem() {
-  const alleDomener = await db
-    .select()
-    .from(domains)
-    .orderBy(asc(domains.rekkefølge));
+function datoStreng(d: Date) {
+  return d.toISOString().split("T")[0];
+}
+
+export default async function IDag() {
+  const iDagStr = datoStreng(new Date());
+
+  const [topp3, haster, alleRutiner, logger, tilfeldigItem] = await Promise.all(
+    [
+      db
+        .select()
+        .from(tasks)
+        .where(and(eq(tasks.status, "åpen"), eq(tasks.topp3, true)))
+        .limit(3),
+
+      db
+        .select()
+        .from(tasks)
+        .where(
+          and(
+            eq(tasks.status, "åpen"),
+            isNotNull(tasks.forfall),
+            lte(tasks.forfall, iDagStr)
+          )
+        )
+        .orderBy(tasks.forfall)
+        .limit(10),
+
+      db.select().from(routines).orderBy(routines.tidspunkt),
+
+      db
+        .select()
+        .from(routineLogs)
+        .where(eq(routineLogs.dato, iDagStr)),
+
+      db
+        .select()
+        .from(libraryItems)
+        .orderBy(sql`RANDOM()`)
+        .limit(1),
+    ]
+  );
+
+  const dagensRutiner = alleRutiner.map((r) => ({
+    id: r.id,
+    navn: r.navn,
+    tidspunkt: r.tidspunkt,
+    fullførtIdag: logger.some((l) => l.routineId === r.id && l.fullført),
+  }));
+
+  const resurfacingItem = tilfeldigItem[0] ?? null;
+
+  // Filtrer ut topp3-oppgaver fra haster-listen
+  const topp3Ids = new Set(topp3.map((o) => o.id));
+  const hasterFiltrert = haster.filter((o) => !topp3Ids.has(o.id));
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-gray-900">Livssystem</h1>
+    <main className="min-h-screen bg-gray-50 pb-8">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100 px-4 py-4">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">I dag</h1>
+            <p className="text-xs text-gray-400">
+              {new Date().toLocaleDateString("nb-NO", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </p>
+          </div>
           <LoggUtKnapp />
         </div>
+      </div>
 
-        <FangstSeksjon />
+      <div className="max-w-md mx-auto px-4 pt-4 space-y-6">
+        {/* Fangst */}
+        <FangstSkjema />
+
+        {/* Topp 3 */}
+        <section>
+          <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+            Topp 3 i dag
+          </h2>
+          <Topp3 oppgaver={topp3} />
+        </section>
+
+        {/* Det som haster */}
+        <DetSomHaster oppgaver={hasterFiltrert} />
+
+        {/* Rutiner */}
+        {dagensRutiner.length > 0 && (
+          <DagensRutiner rutiner={dagensRutiner} />
+        )}
+
+        {/* Resurfacing */}
+        <Resurfacing item={resurfacingItem} />
 
         {/* Navigasjon */}
-        <nav className="mt-6 grid grid-cols-2 gap-2">
+        <nav className="grid grid-cols-3 gap-2 pt-2">
+          <Link
+            href="/oppgaver"
+            className="bg-white rounded-xl shadow-sm px-3 py-3 text-xs font-medium text-gray-600 text-center"
+          >
+            Oppgaver
+          </Link>
           <Link
             href="/rutiner"
-            className="bg-white rounded-xl shadow-sm px-4 py-3 text-sm font-medium text-gray-700 text-center"
+            className="bg-white rounded-xl shadow-sm px-3 py-3 text-xs font-medium text-gray-600 text-center"
           >
             Rutiner
           </Link>
           <Link
-            href="/oppgaver"
-            className="bg-white rounded-xl shadow-sm px-4 py-3 text-sm font-medium text-gray-400 text-center"
+            href="/bibliotek"
+            className="bg-white rounded-xl shadow-sm px-3 py-3 text-xs font-medium text-gray-400 text-center"
           >
-            Oppgaver
+            Bibliotek
           </Link>
         </nav>
-
-        <section className="mt-6">
-          <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
-            Domener
-          </h2>
-          <div className="space-y-2">
-            {alleDomener.map((d) => (
-              <div
-                key={d.id}
-                className="flex items-center gap-3 bg-white rounded-lg px-4 py-3 shadow-sm"
-              >
-                <span
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: d.farge }}
-                />
-                <span className="text-gray-900 text-sm font-medium">
-                  {d.navn}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     </main>
   );
