@@ -57,6 +57,7 @@ export async function PATCH(
   if (body.tittel !== undefined) oppdatering.tittel = body.tittel;
   if (body.notat !== undefined) oppdatering.notat = body.notat ?? null;
   if (body.domainId !== undefined) oppdatering.domainId = body.domainId ?? null;
+  if (body.projectId !== undefined) oppdatering.projectId = body.projectId ?? null;
   if (body.tilbakevendendeRegel !== undefined)
     oppdatering.tilbakevendendeRegel = body.tilbakevendendeRegel ?? null;
 

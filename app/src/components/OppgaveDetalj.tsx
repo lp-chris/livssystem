@@ -11,9 +11,12 @@ type Oppgave = {
   forfall: string | null;
   topp3: boolean;
   domainId: number | null;
+  projectId: number | null;
   status: string;
   tilbakevendendeRegel: string | null;
 };
+
+type Prosjekt = { id: number; navn: string; domainId: number };
 
 const GJENTAGELSE_VALG = [
   { verdi: null, etikett: "Aldri" },
@@ -38,9 +41,11 @@ const PRIORITET_ETIKETT: Record<string, string> = {
 export default function OppgaveDetalj({
   oppgave: init,
   domener,
+  prosjekter = [],
 }: {
   oppgave: Oppgave;
   domener: Domene[];
+  prosjekter?: Prosjekt[];
 }) {
   const [oppgave, setOppgave] = useState(init);
   const [lagrerFelt, setLagrerFelt] = useState<string | null>(null);
@@ -234,6 +239,53 @@ export default function OppgaveDetalj({
           ))}
         </div>
       </div>
+
+      {/* Prosjekt */}
+      {prosjekter.length > 0 && (
+        <div className="mb-6">
+          <label
+            className="block text-[11px] font-bold uppercase mb-3"
+            style={{ letterSpacing: "0.1em", color: "var(--muted)" }}
+          >
+            Prosjekt
+          </label>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                oppdater("projectId", null);
+                lagre("projectId", null);
+              }}
+              className="px-4 py-2 rounded-full text-sm min-h-[44px] transition-all"
+              style={{
+                backgroundColor: oppgave.projectId === null ? "var(--ink)" : "var(--surface)",
+                color: oppgave.projectId === null ? "white" : "var(--ink-3)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              Ingen
+            </button>
+            {prosjekter
+              .filter((p) => !oppgave.domainId || p.domainId === oppgave.domainId)
+              .map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    oppdater("projectId", p.id);
+                    lagre("projectId", p.id);
+                  }}
+                  className="px-4 py-2 rounded-full text-sm min-h-[44px] transition-all"
+                  style={{
+                    backgroundColor: oppgave.projectId === p.id ? "var(--ink)" : "var(--surface)",
+                    color: oppgave.projectId === p.id ? "white" : "var(--ink-3)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  {p.navn}
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* Topp 3 */}
       <div className="mb-8">
