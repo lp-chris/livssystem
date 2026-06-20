@@ -55,6 +55,8 @@ export async function PATCH(
   if (body.leseStatus !== undefined) oppdatering.leseStatus = body.leseStatus;
   if (body.rating !== undefined) oppdatering.rating = body.rating;
   if (body.flaggetForReview !== undefined) oppdatering.flaggetForReview = body.flaggetForReview;
+  if (body.domainId !== undefined) oppdatering.domainId = body.domainId ?? null;
+  if (body.tags !== undefined) oppdatering.tags = Array.isArray(body.tags) ? body.tags : null;
 
   const [oppdatert] = await db
     .update(libraryItems)

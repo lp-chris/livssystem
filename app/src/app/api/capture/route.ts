@@ -38,8 +38,14 @@ Svar KUN med gyldig JSON på dette formatet (ingen markdown, ingen forklaring):
   "forfatter": "For bøker: forfatternavn, ellers null",
   "kilde": "For sitater: hvem som sa det, ellers null",
   "tidspunkt": "morgen" | "ettermiddag" | "kveld" | "når_som_helst" (kun for rutiner),
-  "topp3": false
-}`;
+  "topp3": false,
+  "tags": ["tag1", "tag2"]
+}
+
+Tags-regler (kun for notat, sitat, bok):
+- Lag 1-3 korte, lowercase tags som beskriver innholdet
+- Eksempler: "stall", "trening", "økonomi", "helse", "lesing", "planlegging", "idé"
+- For oppgave/rutine/journal: returner tom array []`;
 
 async function rutMedAI(tekst: string) {
   const response = await client.messages.create({
@@ -112,24 +118,34 @@ async function lagreRutet(tolket: Record<string, unknown>) {
     }
 
     case "notat": {
+      const tags = Array.isArray(tolket.tags)
+        ? (tolket.tags as string[]).filter((t) => typeof t === "string")
+        : [];
       const [rad] = await db
         .insert(libraryItems)
         .values({
           type: "notat",
+          domainId,
           tittel: String(tolket.tittel),
           innhold: tolket.notat ? String(tolket.notat) : null,
+          tags: tags.length ? tags : null,
         })
         .returning();
       return { type: "notat", id: rad.id };
     }
 
     case "sitat": {
+      const tags = Array.isArray(tolket.tags)
+        ? (tolket.tags as string[]).filter((t) => typeof t === "string")
+        : [];
       const [rad] = await db
         .insert(libraryItems)
         .values({
           type: "sitat",
+          domainId,
           innhold: String(tolket.tittel),
           kilde: tolket.kilde ? String(tolket.kilde) : null,
+          tags: tags.length ? tags : null,
         })
         .returning();
       return { type: "sitat", id: rad.id };
@@ -140,6 +156,7 @@ async function lagreRutet(tolket: Record<string, unknown>) {
         .insert(libraryItems)
         .values({
           type: "bok",
+          domainId,
           tittel: String(tolket.tittel),
           forfatter: tolket.forfatter ? String(tolket.forfatter) : null,
           leseStatus: "vil_lese",
@@ -153,6 +170,7 @@ async function lagreRutet(tolket: Record<string, unknown>) {
         .insert(libraryItems)
         .values({
           type: "journal",
+          domainId,
           tittel: tolket.tittel ? String(tolket.tittel) : null,
           innhold: tolket.notat
             ? `${String(tolket.tittel)}\n\n${String(tolket.notat)}`

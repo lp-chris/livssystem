@@ -1,0 +1,860 @@
+{
+  "id": "a2378d2c-f8d0-4414-bf1a-17e4e2f551a9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.captures": {
+      "name": "captures",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ra_tekst": {
+          "name": "ra_tekst",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tolket_json": {
+          "name": "tolket_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rutet_til": {
+          "name": "rutet_til",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "capture_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'venter'"
+        },
+        "opprettet": {
+          "name": "opprettet",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.domains": {
+      "name": "domains",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "domain_name",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "farge": {
+          "name": "farge",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rekkefolge": {
+          "name": "rekkefolge",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "domains_navn_unique": {
+          "name": "domains_navn_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "navn"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.library_items": {
+      "name": "library_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "library_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "domain_id": {
+          "name": "domain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tittel": {
+          "name": "tittel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "innhold": {
+          "name": "innhold",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kilde": {
+          "name": "kilde",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flagget_for_review": {
+          "name": "flagget_for_review",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "review_dato": {
+          "name": "review_dato",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "favoritt": {
+          "name": "favoritt",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "opprettet": {
+          "name": "opprettet",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "forfatter": {
+          "name": "forfatter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "omslag_url": {
+          "name": "omslag_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lese_status": {
+          "name": "lese_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "format": {
+          "name": "format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startet": {
+          "name": "startet",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fullfort_dato": {
+          "name": "fullfort_dato",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isbn": {
+          "name": "isbn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sammendrag": {
+          "name": "sammendrag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "library_items_domain_id_domains_id_fk": {
+          "name": "library_items_domain_id_domains_id_fk",
+          "tableFrom": "library_items",
+          "tableTo": "domains",
+          "columnsFrom": [
+            "domain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.library_thoughts": {
+      "name": "library_thoughts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tekst": {
+          "name": "tekst",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opprettet": {
+          "name": "opprettet",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "library_thoughts_item_id_library_items_id_fk": {
+          "name": "library_thoughts_item_id_library_items_id_fk",
+          "tableFrom": "library_thoughts",
+          "tableTo": "library_items",
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.milestones": {
+      "name": "milestones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "forfall": {
+          "name": "forfall",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fullfort": {
+          "name": "fullfort",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "rekkefolge": {
+          "name": "rekkefolge",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "milestones_project_id_projects_id_fk": {
+          "name": "milestones_project_id_projects_id_fk",
+          "tableFrom": "milestones",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.projects": {
+      "name": "projects",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "domain_id": {
+          "name": "domain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivelse": {
+          "name": "beskrivelse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "project_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'prosjekt'"
+        },
+        "status": {
+          "name": "status",
+          "type": "project_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aktiv'"
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet": {
+          "name": "opprettet",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "sist_rort_at": {
+          "name": "sist_rort_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "projects_domain_id_domains_id_fk": {
+          "name": "projects_domain_id_domains_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "domains",
+          "columnsFrom": [
+            "domain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.routine_logs": {
+      "name": "routine_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "routine_id": {
+          "name": "routine_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dato": {
+          "name": "dato",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fullfort": {
+          "name": "fullfort",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "routine_logs_routine_id_routines_id_fk": {
+          "name": "routine_logs_routine_id_routines_id_fk",
+          "tableFrom": "routine_logs",
+          "tableTo": "routines",
+          "columnsFrom": [
+            "routine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.routines": {
+      "name": "routines",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "domain_id": {
+          "name": "domain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivelse": {
+          "name": "beskrivelse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tidspunkt": {
+          "name": "tidspunkt",
+          "type": "routine_time",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'når_som_helst'"
+        },
+        "klokkeslett": {
+          "name": "klokkeslett",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "routine_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'daglig'"
+        },
+        "varighet_dager": {
+          "name": "varighet_dager",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "send_varsel": {
+          "name": "send_varsel",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "routines_domain_id_domains_id_fk": {
+          "name": "routines_domain_id_domains_id_fk",
+          "tableFrom": "routines",
+          "tableTo": "domains",
+          "columnsFrom": [
+            "domain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "domain_id": {
+          "name": "domain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "milestone_id": {
+          "name": "milestone_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tittel": {
+          "name": "tittel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notat": {
+          "name": "notat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prioritet": {
+          "name": "prioritet",
+          "type": "task_priority",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'normal'"
+        },
+        "forfall": {
+          "name": "forfall",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "paminnelse_at": {
+          "name": "paminnelse_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "topp3": {
+          "name": "topp3",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "tilbakevendende_regel": {
+          "name": "tilbakevendende_regel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neste_forekomst": {
+          "name": "neste_forekomst",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "task_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'åpen'"
+        },
+        "opprettet": {
+          "name": "opprettet",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "fullfort_at": {
+          "name": "fullfort_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "varslet_at": {
+          "name": "varslet_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tasks_domain_id_domains_id_fk": {
+          "name": "tasks_domain_id_domains_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "domains",
+          "columnsFrom": [
+            "domain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_project_id_projects_id_fk": {
+          "name": "tasks_project_id_projects_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_milestone_id_milestones_id_fk": {
+          "name": "tasks_milestone_id_milestones_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "milestones",
+          "columnsFrom": [
+            "milestone_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.capture_status": {
+      "name": "capture_status",
+      "schema": "public",
+      "values": [
+        "behandlet",
+        "feil",
+        "venter"
+      ]
+    },
+    "public.domain_name": {
+      "name": "domain_name",
+      "schema": "public",
+      "values": [
+        "Meg",
+        "Oss",
+        "Stall",
+        "Hest"
+      ]
+    },
+    "public.library_type": {
+      "name": "library_type",
+      "schema": "public",
+      "values": [
+        "notat",
+        "sitat",
+        "bok",
+        "journal"
+      ]
+    },
+    "public.project_status": {
+      "name": "project_status",
+      "schema": "public",
+      "values": [
+        "aktiv",
+        "pause",
+        "fullført",
+        "avbrutt"
+      ]
+    },
+    "public.project_type": {
+      "name": "project_type",
+      "schema": "public",
+      "values": [
+        "prosjekt",
+        "område"
+      ]
+    },
+    "public.routine_time": {
+      "name": "routine_time",
+      "schema": "public",
+      "values": [
+        "morgen",
+        "ettermiddag",
+        "kveld",
+        "når_som_helst"
+      ]
+    },
+    "public.routine_type": {
+      "name": "routine_type",
+      "schema": "public",
+      "values": [
+        "daglig",
+        "tidsbegrenset"
+      ]
+    },
+    "public.task_priority": {
+      "name": "task_priority",
+      "schema": "public",
+      "values": [
+        "høy",
+        "normal",
+        "lav"
+      ]
+    },
+    "public.task_status": {
+      "name": "task_status",
+      "schema": "public",
+      "values": [
+        "åpen",
+        "gjort"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

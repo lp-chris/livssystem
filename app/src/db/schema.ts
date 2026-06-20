@@ -136,6 +136,7 @@ export const routineLogs = pgTable("routine_logs", {
 export const libraryItems = pgTable("library_items", {
   id: serial("id").primaryKey(),
   type: libraryTypeEnum("type").notNull(),
+  domainId: integer("domain_id").references(() => domains.id),
   tittel: text("tittel"),
   innhold: text("innhold"),
   kilde: text("kilde"),

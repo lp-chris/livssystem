@@ -2,8 +2,9 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { db } from "@/db";
-import { libraryItems } from "@/db/schema";
+import { libraryItems, domains } from "@/db/schema";
 import { desc, eq, ne } from "drizzle-orm";
+import NotatListe from "@/components/NotatListe";
 
 const leseStatusEtikett: Record<string, string> = {
   vil_lese: "Vil lese",
@@ -12,7 +13,7 @@ const leseStatusEtikett: Record<string, string> = {
 };
 
 export default async function BibliiotekSide() {
-  const [items, sisteJournal] = await Promise.all([
+  const [items, sisteJournal, alleDomener] = await Promise.all([
     db
       .select()
       .from(libraryItems)
@@ -24,6 +25,7 @@ export default async function BibliiotekSide() {
       .where(eq(libraryItems.type, "journal"))
       .orderBy(desc(libraryItems.opprettet))
       .limit(1),
+    db.select().from(domains).orderBy(domains.rekkefølge),
   ]);
 
   const notater = items.filter((i) => i.type === "notat");
@@ -155,36 +157,7 @@ export default async function BibliiotekSide() {
         )}
 
         {notater.length > 0 && (
-          <section>
-            <h2
-              className="text-[11px] font-bold uppercase mb-3"
-              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-            >
-              Notater ({notater.length})
-            </h2>
-            <div className="space-y-2">
-              {notater.map((n) => (
-                <Link
-                  key={n.id}
-                  href={`/bibliotek/${n.id}`}
-                  className="block px-4 py-3 rounded-[22px] transition-opacity active:opacity-70"
-                  style={{
-                    backgroundColor: "var(--card)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  <p className="text-sm font-medium truncate" style={{ color: "var(--ink)" }}>
-                    {n.tittel}
-                  </p>
-                  {n.innhold && (
-                    <p className="text-xs mt-0.5 line-clamp-2" style={{ color: "var(--ink-3)" }}>
-                      {n.innhold}
-                    </p>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>
+          <NotatListe notater={notater} domener={alleDomener} />
         )}
       </div>
     </main>
