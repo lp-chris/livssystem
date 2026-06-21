@@ -47,7 +47,7 @@ export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }
         {oppgaver.map((o, i) => (
           <div
             key={o.id}
-            className="flex items-center gap-3 px-4 py-3.5"
+            className="flex items-center px-1 py-1"
             style={{
               borderTop: i > 0 ? "1px solid var(--border)" : "none",
               borderLeft: "3px solid #C28568",
@@ -56,14 +56,19 @@ export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }
             <button
               onClick={() => markerFerdig(o.id)}
               aria-label="Marker som gjort"
-              className="flex items-center justify-center rounded-full flex-shrink-0 transition-colors min-w-[44px] min-h-[44px]"
-              style={{
-                width: 23,
-                height: 23,
-                border: "1.8px solid #D8D3C8",
-              }}
-            />
-            <div className="flex-1 min-w-0">
+              className="flex items-center justify-center flex-shrink-0 transition-colors"
+              style={{ minWidth: 44, minHeight: 44 }}
+            >
+              <div
+                style={{
+                  width: 21,
+                  height: 21,
+                  borderRadius: "50%",
+                  border: "1.8px solid #D8D3C8",
+                }}
+              />
+            </button>
+            <div className="flex-1 min-w-0 pr-3">
               <p className="text-sm font-medium" style={{ color: "var(--ink)" }}>
                 {o.tittel}
               </p>

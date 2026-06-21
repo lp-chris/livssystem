@@ -61,7 +61,7 @@ export default function KalenderIDag() {
         {hendelser.map((h, i) => (
           <div
             key={h.id}
-            className="flex items-center gap-3 px-4 py-3.5"
+            className="flex items-center gap-3 px-4 py-2.5"
             style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
           >
             <div

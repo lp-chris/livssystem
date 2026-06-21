@@ -48,26 +48,31 @@ export default function DagensRutiner({ rutiner: init }: { rutiner: RutinePrevie
         {rutiner.map((r, i) => (
           <div
             key={r.id}
-            className="flex items-center gap-3 px-4 py-3.5"
+            className="flex items-center px-2 py-1"
             style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
           >
             <button
               onClick={() => toggle(r.id)}
               aria-label={r.fullførtIdag ? "Marker som ikke gjort" : "Marker som gjort"}
-              className="flex items-center justify-center rounded-full flex-shrink-0 transition-all min-w-[44px] min-h-[44px]"
-              style={{
-                width: 25,
-                height: 25,
-                backgroundColor: r.fullførtIdag ? "var(--ink)" : "transparent",
-                border: r.fullførtIdag ? "none" : "1.8px solid #D8D3C8",
-                color: "white",
-                fontSize: 13,
-              }}
+              className="flex items-center justify-center flex-shrink-0 transition-all"
+              style={{ minWidth: 44, minHeight: 44 }}
             >
-              {r.fullførtIdag ? "✓" : ""}
+              <div
+                className="flex items-center justify-center rounded-full transition-all"
+                style={{
+                  width: 22,
+                  height: 22,
+                  backgroundColor: r.fullførtIdag ? "var(--ink)" : "transparent",
+                  border: r.fullførtIdag ? "none" : "1.8px solid #D8D3C8",
+                  color: "white",
+                  fontSize: 12,
+                }}
+              >
+                {r.fullførtIdag ? "✓" : ""}
+              </div>
             </button>
             <span
-              className="flex-1 text-sm font-medium transition-all"
+              className="flex-1 text-sm transition-all"
               style={{
                 color: r.fullførtIdag ? "var(--muted)" : "var(--ink)",
                 textDecoration: r.fullførtIdag ? "line-through" : "none",
