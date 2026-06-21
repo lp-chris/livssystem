@@ -69,7 +69,7 @@ export default function ProsjektDetalj({
     const oppdatert = { ...milepæl, fullført: !milepæl.fullført };
     setMilepæler((prev) => prev.map((m) => (m.id === milepæl.id ? oppdatert : m)));
 
-    await fetch(`/api/milepæler/${milepæl.id}`, {
+    await fetch(`/api/milestone/${milepæl.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fullført: !milepæl.fullført }),
