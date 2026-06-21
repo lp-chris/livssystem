@@ -35,48 +35,57 @@ export default function KalenderIDag() {
 
   return (
     <section>
-      <div className="flex items-baseline justify-between mb-3">
+      <div className="flex items-center justify-between mb-2.5 px-1">
         <h2
           className="text-[11px] font-bold uppercase"
           style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
         >
           I dag · kalender
         </h2>
-        <span className="text-[10px]" style={{ color: "var(--muted)" }}>
+        <span
+          className="text-[10px] flex items-center gap-1"
+          style={{ color: "var(--muted)" }}
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+          </svg>
           Kun visning
         </span>
       </div>
-      <div className="space-y-2">
-        {hendelser.map((h) => (
+
+      <div
+        className="rounded-[22px] overflow-hidden"
+        style={{ backgroundColor: "#FAF9F5", border: "1px solid var(--border)" }}
+      >
+        {hendelser.map((h, i) => (
           <div
             key={h.id}
-            className="flex items-center gap-3 px-4 py-3 rounded-[18px]"
-            style={{
-              backgroundColor: "var(--card)",
-              border: "1px solid var(--border)",
-            }}
+            className="flex items-center gap-3 px-4 py-3.5"
+            style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
           >
             <div
-              className="w-1 self-stretch rounded-full flex-shrink-0"
-              style={{ backgroundColor: "var(--meg)", minHeight: 20 }}
+              className="text-sm font-semibold flex-shrink-0 text-right"
+              style={{ width: 44, color: "var(--muted)" }}
+            >
+              {h.helDag ? "—" : formaterTid(h.start)}
+            </div>
+            <div
+              className="flex-shrink-0 rounded-full"
+              style={{ width: 3, height: 26, backgroundColor: "#DAD5C9" }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm" style={{ color: "var(--ink)" }}>
                 {h.tittel}
               </p>
-              {!h.helDag && (
-                <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
-                  {formaterTid(h.start)}–{formaterTid(h.slutt)}
+              {h.sted && (
+                <p className="text-xs mt-0.5 truncate" style={{ color: "var(--muted)" }}>
+                  {h.sted}
                 </p>
               )}
               {h.helDag && (
                 <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
                   Hele dagen
-                </p>
-              )}
-              {h.sted && (
-                <p className="text-xs mt-0.5 truncate" style={{ color: "var(--muted)" }}>
-                  {h.sted}
                 </p>
               )}
             </div>

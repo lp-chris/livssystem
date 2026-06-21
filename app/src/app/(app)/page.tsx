@@ -70,9 +70,9 @@ export default async function IDag() {
   });
 
   return (
-    <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-none md:px-10 md:pt-10">
+    <main className="pb-40 px-4 pt-5 max-w-md mx-auto md:max-w-none md:px-10 md:pt-10">
       {/* Hilsen */}
-      <header className="mb-8 flex items-start justify-between">
+      <header className="mb-5 flex items-start justify-between">
         <div>
           <h1
             className="text-2xl font-semibold"
@@ -98,26 +98,17 @@ export default async function IDag() {
       </header>
 
       {/* Mobil: én kolonne / Desktop: to kolonner */}
-      <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+      <div className="md:grid md:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
         {/* Venstre kolonne */}
-        <div className="space-y-6">
-          <section>
-            <h2
-              className="text-[11px] font-bold uppercase mb-2"
-              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-            >
-              Topp 3 i dag
-            </h2>
-            <Topp3 oppgaver={topp3} />
-          </section>
-
+        <div className="space-y-5">
+          <Topp3 oppgaver={topp3} />
           {dagensRutiner.length > 0 && (
             <DagensRutiner rutiner={dagensRutiner} />
           )}
         </div>
 
         {/* Høyre kolonne */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           <DetSomHaster oppgaver={hasterFiltrert} />
           <KalenderIDag />
         </div>
