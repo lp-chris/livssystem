@@ -80,7 +80,7 @@ export default function ProsjektDetalj({
     if (!nyMilepæl.trim()) return;
     setLeggerTil(true);
     try {
-      const res = await fetch(`/api/prosjekter/${prosjekt.id}/milepæler`, {
+      const res = await fetch(`/api/prosjekter/${prosjekt.id}/milestones`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ navn: nyMilepæl.trim() }),
