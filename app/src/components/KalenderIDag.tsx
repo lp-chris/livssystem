@@ -8,6 +8,7 @@ type Hendelse = {
   start: string;
   slutt: string;
   helDag: boolean;
+  sted?: string;
 };
 
 function formaterTid(iso: string): string {
@@ -34,12 +35,17 @@ export default function KalenderIDag() {
 
   return (
     <section>
-      <h2
-        className="text-[11px] font-bold uppercase mb-3"
-        style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-      >
-        I dag
-      </h2>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2
+          className="text-[11px] font-bold uppercase"
+          style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+        >
+          I dag · kalender
+        </h2>
+        <span className="text-[10px]" style={{ color: "var(--muted)" }}>
+          Kun visning
+        </span>
+      </div>
       <div className="space-y-2">
         {hendelser.map((h) => (
           <div
@@ -66,6 +72,11 @@ export default function KalenderIDag() {
               {h.helDag && (
                 <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
                   Hele dagen
+                </p>
+              )}
+              {h.sted && (
+                <p className="text-xs mt-0.5 truncate" style={{ color: "var(--muted)" }}>
+                  {h.sted}
                 </p>
               )}
             </div>

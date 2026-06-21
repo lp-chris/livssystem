@@ -1,0 +1,330 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+type Domene = { id: number; navn: string; farge: string };
+
+type LibraryItem = {
+  id: number;
+  type: string;
+  tittel: string | null;
+  innhold: string | null;
+  kilde: string | null;
+  forfatter: string | null;
+  leseStatus: string | null;
+  favoritt: boolean;
+  tags: string[] | null;
+  domainId: number | null;
+  opprettet: Date;
+};
+
+const leseStatusEtikett: Record<string, string> = {
+  vil_lese: "Vil lese",
+  leser: "Leser nå",
+  fullført: "Lest",
+};
+
+type Fane = "notater" | "sitater" | "bøker";
+
+export default function BibliiotekTabs({
+  items,
+  domener,
+}: {
+  items: LibraryItem[];
+  domener: Domene[];
+}) {
+  const [aktivFane, setAktivFane] = useState<Fane>("notater");
+  const [aktivTag, setAktivTag] = useState<string | null>(null);
+  const [aktivDomene, setAktivDomene] = useState<number | null>(null);
+
+  const notater = items.filter((i) => i.type === "notat");
+  const sitater = items.filter((i) => i.type === "sitat");
+  const bøker = items.filter((i) => i.type === "bok");
+
+  const faner: { key: Fane; label: string; antall: number }[] = [
+    { key: "notater", label: "Notater", antall: notater.length },
+    { key: "sitater", label: "Sitater", antall: sitater.length },
+    { key: "bøker", label: "Bøker", antall: bøker.length },
+  ];
+
+  const domeneFraId = Object.fromEntries(domener.map((d) => [d.id, d]));
+
+  const aktivItems =
+    aktivFane === "notater"
+      ? notater
+      : aktivFane === "sitater"
+      ? sitater
+      : bøker;
+
+  const alleTags =
+    aktivFane === "notater"
+      ? Array.from(new Set(notater.flatMap((n) => n.tags ?? []))).sort()
+      : [];
+
+  const filtrertNotater = notater.filter((n) => {
+    if (aktivTag && !(n.tags ?? []).includes(aktivTag)) return false;
+    if (aktivDomene !== null && n.domainId !== aktivDomene) return false;
+    return true;
+  });
+
+  function byttFane(fane: Fane) {
+    setAktivFane(fane);
+    setAktivTag(null);
+    setAktivDomene(null);
+  }
+
+  return (
+    <div>
+      {/* Fane-rad */}
+      <div
+        className="flex gap-1 mb-6 p-1 rounded-[14px]"
+        style={{ backgroundColor: "var(--surface)" }}
+      >
+        {faner.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => byttFane(f.key)}
+            className="flex-1 text-sm py-2 rounded-[11px] transition-colors"
+            style={{
+              backgroundColor:
+                aktivFane === f.key ? "var(--card)" : "transparent",
+              color:
+                aktivFane === f.key ? "var(--ink)" : "var(--muted)",
+              fontWeight: aktivFane === f.key ? 500 : 400,
+              boxShadow:
+                aktivFane === f.key
+                  ? "0 1px 3px rgba(0,0,0,0.08)"
+                  : "none",
+            }}
+          >
+            {f.label}
+            {f.antall > 0 && (
+              <span
+                className="ml-1.5 text-[11px]"
+                style={{ color: "var(--muted)", opacity: 0.7 }}
+              >
+                {f.antall}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Notater */}
+      {aktivFane === "notater" && (
+        <div>
+          {/* Filter */}
+          {(alleTags.length > 0 || domener.some((d) => notater.some((n) => n.domainId === d.id))) && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {domener
+                .filter((d) => notater.some((n) => n.domainId === d.id))
+                .map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() =>
+                      setAktivDomene(aktivDomene === d.id ? null : d.id)
+                    }
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-sm"
+                    style={{
+                      backgroundColor:
+                        aktivDomene === d.id ? "var(--ink)" : "var(--surface)",
+                      color:
+                        aktivDomene === d.id ? "var(--surface)" : "var(--ink-3)",
+                      border: `1px solid ${aktivDomene === d.id ? "var(--ink)" : "var(--border)"}`,
+                    }}
+                  >
+                    <span
+                      className="rounded-full flex-none"
+                      style={{
+                        width: 7,
+                        height: 7,
+                        backgroundColor: d.farge,
+                        display: "inline-block",
+                      }}
+                    />
+                    {d.navn}
+                  </button>
+                ))}
+              {alleTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setAktivTag(aktivTag === tag ? null : tag)}
+                  className="px-3 py-1 rounded-full text-sm"
+                  style={{
+                    backgroundColor:
+                      aktivTag === tag ? "var(--ink)" : "var(--surface)",
+                    color:
+                      aktivTag === tag ? "var(--surface)" : "var(--ink-3)",
+                    border: `1px solid ${aktivTag === tag ? "var(--ink)" : "var(--border)"}`,
+                  }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {filtrertNotater.length === 0 && (
+            <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
+              {notater.length === 0
+                ? "Ingen notater ennå."
+                : "Ingen notater matcher filteret."}
+            </p>
+          )}
+
+          <div className="space-y-2">
+            {filtrertNotater.map((n) => {
+              const domene = n.domainId ? domeneFraId[n.domainId] : null;
+              return (
+                <Link
+                  key={n.id}
+                  href={`/bibliotek/${n.id}`}
+                  className="block px-4 py-3 rounded-[22px] transition-opacity active:opacity-70"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-0.5">
+                    {domene && (
+                      <span
+                        className="rounded-full flex-none"
+                        style={{
+                          width: 7,
+                          height: 7,
+                          backgroundColor: domene.farge,
+                          display: "inline-block",
+                        }}
+                      />
+                    )}
+                    <p
+                      className="text-sm font-medium truncate"
+                      style={{ color: "var(--ink)" }}
+                    >
+                      {n.tittel ?? "(uten tittel)"}
+                    </p>
+                  </div>
+                  {n.innhold && (
+                    <p
+                      className="text-xs mt-0.5 line-clamp-2"
+                      style={{ color: "var(--ink-3)" }}
+                    >
+                      {n.innhold}
+                    </p>
+                  )}
+                  {(n.tags ?? []).length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {(n.tags ?? []).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] px-2 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            color: "var(--muted)",
+                            border: "1px solid var(--border)",
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Sitater */}
+      {aktivFane === "sitater" && (
+        <div>
+          {sitater.length === 0 && (
+            <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
+              Ingen sitater ennå.
+            </p>
+          )}
+          <div className="space-y-2">
+            {sitater.map((s) => (
+              <Link
+                key={s.id}
+                href={`/bibliotek/${s.id}`}
+                className="block px-4 py-4 rounded-[22px] transition-opacity active:opacity-70"
+                style={{
+                  backgroundColor: "#EBE6DB",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <p
+                  className="text-sm leading-relaxed line-clamp-2"
+                  style={{ color: "var(--ink-2)", fontStyle: "italic" }}
+                >
+                  "{s.innhold}"
+                </p>
+                {s.kilde && (
+                  <p className="text-xs mt-1.5" style={{ color: "var(--muted)" }}>
+                    — {s.kilde}
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Bøker */}
+      {aktivFane === "bøker" && (
+        <div>
+          {bøker.length === 0 && (
+            <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
+              Ingen bøker ennå.
+            </p>
+          )}
+          <div className="space-y-2">
+            {bøker.map((b) => (
+              <Link
+                key={b.id}
+                href={`/bibliotek/${b.id}`}
+                className="flex items-center gap-3 px-4 py-3 rounded-[22px] transition-opacity active:opacity-70"
+                style={{
+                  backgroundColor: "var(--card)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <span style={{ color: "var(--hest)", fontSize: 18 }}>❧</span>
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-medium truncate"
+                    style={{ color: "var(--ink)" }}
+                  >
+                    {b.tittel}
+                  </div>
+                  {b.forfatter && (
+                    <div
+                      className="text-xs mt-0.5"
+                      style={{ color: "var(--muted)" }}
+                    >
+                      {b.forfatter}
+                    </div>
+                  )}
+                </div>
+                {b.leseStatus && (
+                  <span
+                    className="text-xs flex-shrink-0"
+                    style={{ color: "var(--muted)" }}
+                  >
+                    {leseStatusEtikett[b.leseStatus] ?? b.leseStatus}
+                  </span>
+                )}
+                {b.favoritt && (
+                  <span style={{ color: "var(--hest)" }}>★</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

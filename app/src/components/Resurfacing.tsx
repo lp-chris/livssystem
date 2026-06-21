@@ -29,12 +29,17 @@ export default function Resurfacing({ item }: { item: LibraryItem | null }) {
       className="rounded-[22px] px-5 py-5"
       style={{ backgroundColor: "#EBE6DB" }}
     >
-      <p
-        className="text-[11px] font-bold uppercase mb-3"
-        style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-      >
-        {item.type === "sitat" ? "Sitat" : item.type === "bok" ? "Bok" : "Notat"}
-      </p>
+      <div className="flex items-baseline justify-between mb-3">
+        <p
+          className="text-[11px] font-bold uppercase"
+          style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+        >
+          {item.type === "sitat" ? "Sitat" : item.type === "bok" ? "Bok" : "Notat"}
+        </p>
+        <span className="text-[10px]" style={{ color: "var(--muted)" }}>
+          roterer daglig
+        </span>
+      </div>
       <p
         className="text-base leading-relaxed"
         style={{

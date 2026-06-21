@@ -6,6 +6,7 @@ export type KalenderHendelse = {
   start: string;
   slutt: string;
   helDag: boolean;
+  sted?: string;
 };
 
 function lagOAuthKlient() {
@@ -44,6 +45,7 @@ export async function hentDagensHendelser(): Promise<KalenderHendelse[]> {
       start: e.start?.dateTime ?? e.start?.date ?? "",
       slutt: e.end?.dateTime ?? e.end?.date ?? "",
       helDag,
+      sted: e.location ?? undefined,
     };
   });
 }

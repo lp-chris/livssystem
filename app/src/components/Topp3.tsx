@@ -32,6 +32,10 @@ export default function Topp3({ oppgaver: init }: { oppgaver: Oppgave[] }) {
   }
 
   return (
+    <div>
+      <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>
+        {oppgaver.length} igjen
+      </p>
     <div className="space-y-2">
       {oppgaver.map((o, i) => (
         <div
@@ -71,6 +75,7 @@ export default function Topp3({ oppgaver: init }: { oppgaver: Oppgave[] }) {
           </button>
         </div>
       ))}
+    </div>
     </div>
   );
 }

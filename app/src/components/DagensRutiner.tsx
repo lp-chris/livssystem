@@ -26,12 +26,14 @@ export default function DagensRutiner({ rutiner: init }: { rutiner: RutinePrevie
   return (
     <section>
       <div className="flex items-center justify-between mb-2">
-        <h2
-          className="text-[11px] font-bold uppercase"
+        <Link
+          href="/rutiner"
+          className="flex items-center gap-1 text-[11px] font-bold uppercase"
           style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
         >
-          Rutiner i dag
-        </h2>
+          Dagens rutiner
+          <span style={{ fontSize: 10 }}>→</span>
+        </Link>
         <span className="text-xs" style={{ color: "var(--muted)" }}>
           {antallFerdig}/{rutiner.length}
         </span>
@@ -72,13 +74,6 @@ export default function DagensRutiner({ rutiner: init }: { rutiner: RutinePrevie
           </div>
         ))}
       </div>
-      <Link
-        href="/rutiner"
-        className="block text-center text-xs mt-2 py-1"
-        style={{ color: "var(--muted)" }}
-      >
-        Se alle rutiner →
-      </Link>
     </section>
   );
 }
