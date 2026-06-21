@@ -79,15 +79,25 @@ export default function ProsjektDetalj({
   async function leggTilMilepæl() {
     if (!nyMilepæl.trim()) return;
     setLeggerTil(true);
-    const res = await fetch(`/api/prosjekter/${prosjekt.id}/milepæler`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ navn: nyMilepæl.trim() }),
-    });
-    const ny = await res.json();
-    setMilepæler((prev) => [...prev, ny]);
-    setNyMilepæl("");
-    setLeggerTil(false);
+    try {
+      const res = await fetch(`/api/prosjekter/${prosjekt.id}/milepæler`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ navn: nyMilepæl.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Kunne ikke lagre milepæl: ${data.feil ?? res.status}`);
+        return;
+      }
+      const ny = await res.json();
+      setMilepæler((prev) => [...prev, ny]);
+      setNyMilepæl("");
+    } catch {
+      alert("Nettverksfeil — prøv igjen.");
+    } finally {
+      setLeggerTil(false);
+    }
   }
 
   async function slettProsjekt() {
