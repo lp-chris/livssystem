@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { db } from "@/db";
-import { projects, domains } from "@/db/schema";
+import { projects, domains, milestones } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import Link from "next/link";
 import NyttProsjektSkjema from "@/components/NyttProsjektSkjema";
@@ -23,11 +23,13 @@ export default async function ProsjekterSide() {
       type: projects.type,
       endDate: projects.endDate,
       domainId: projects.domainId,
-      totalMilepæler: sql<number>`(select count(*) from milestones m where m.project_id = ${projects.id})`,
-      fullførtMilepæler: sql<number>`(select count(*) from milestones m where m.project_id = ${projects.id} and m.fullfort = true)`,
+      totalMilepæler: sql<number>`count(${milestones.id})::int`,
+      fullførtMilepæler: sql<number>`count(case when ${milestones.fullført} = true then 1 end)::int`,
     })
     .from(projects)
+    .leftJoin(milestones, eq(milestones.projectId, projects.id))
     .where(eq(projects.status, "aktiv"))
+    .groupBy(projects.id, projects.navn, projects.type, projects.endDate, projects.domainId, projects.domainId, projects.opprettet)
     .orderBy(projects.domainId, projects.opprettet);
 
   const gruppert = alleDomener.map((d) => ({
