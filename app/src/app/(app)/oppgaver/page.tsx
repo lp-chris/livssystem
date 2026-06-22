@@ -31,7 +31,13 @@ function forfallTekst(forfall: string | null): { tekst: string; farge: string } 
   return { tekst, farge: "var(--ink-3)" };
 }
 
-export default async function OppgaverSide() {
+export default async function OppgaverSide({
+  searchParams,
+}: {
+  searchParams: Promise<{ domene?: string }>;
+}) {
+  const { domene: valgtDomeneNavn } = await searchParams;
+
   const [alleÅpne, alleDomener] = await Promise.all([
     db
       .select()
@@ -43,29 +49,80 @@ export default async function OppgaverSide() {
 
   const domeneFraId = Object.fromEntries(alleDomener.map((d) => [d.id, d]));
 
-  const topp3 = alleÅpne.filter((o) => o.topp3);
-  const andre = alleÅpne.filter((o) => !o.topp3);
+  const valgtDomene = valgtDomeneNavn
+    ? alleDomener.find((d) => d.navn === valgtDomeneNavn)
+    : null;
+
+  const filtrerte = valgtDomene
+    ? alleÅpne.filter((o) => o.domainId === valgtDomene.id)
+    : alleÅpne;
+
+  const topp3 = filtrerte.filter((o) => o.topp3);
+  const andre = filtrerte.filter((o) => !o.topp3);
 
   return (
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-none md:px-10 md:pt-10">
-      <header className="mb-8 flex items-start justify-between">
+      <header className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold" style={{ color: "var(--ink)" }}>
             Oppgaver
           </h1>
           <p className="text-sm mt-0.5" style={{ color: "var(--muted)" }}>
-            {alleÅpne.length} åpne
+            {filtrerte.length} åpne{valgtDomene ? ` · ${valgtDomene.navn}` : ""}
           </p>
         </div>
         <NyOppgaveKnapp />
       </header>
 
+      {/* Domenefiltere */}
+      <div className="flex gap-2 flex-wrap mb-8">
+        <Link
+          href="/oppgaver"
+          className="px-3 py-1.5 rounded-full text-[13px] font-medium min-h-[36px] flex items-center"
+          style={{
+            backgroundColor: !valgtDomene ? "var(--ink)" : "var(--card)",
+            color: !valgtDomene ? "var(--surface)" : "var(--muted)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          Alle
+        </Link>
+        {alleDomener.map((d) => {
+          const aktiv = valgtDomene?.id === d.id;
+          return (
+            <Link
+              key={d.id}
+              href={aktiv ? "/oppgaver" : `/oppgaver?domene=${d.navn}`}
+              className="px-3 py-1.5 rounded-full text-[13px] font-medium min-h-[36px] flex items-center gap-1.5"
+              style={{
+                backgroundColor: aktiv ? "var(--ink)" : "var(--card)",
+                color: aktiv ? "var(--surface)" : "var(--ink-3)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <span
+                className="rounded-full"
+                style={{
+                  width: 7,
+                  height: 7,
+                  backgroundColor: aktiv
+                    ? "var(--surface)"
+                    : `var(--${d.navn.toLowerCase()})`,
+                  flexShrink: 0,
+                }}
+              />
+              {d.navn}
+            </Link>
+          );
+        })}
+      </div>
+
       <SisteFangster />
 
-      {alleÅpne.length === 0 && (
+      {filtrerte.length === 0 && (
         <div className="text-center py-16">
           <p className="text-sm" style={{ color: "var(--muted)" }}>
-            Ingen åpne oppgaver.
+            Ingen åpne oppgaver{valgtDomene ? ` i ${valgtDomene.navn}` : ""}.
           </p>
         </div>
       )}
@@ -106,7 +163,7 @@ export default async function OppgaverSide() {
       </div>
 
       {/* Desktop: tabellvisning */}
-      {alleÅpne.length > 0 && (
+      {filtrerte.length > 0 && (
         <div
           className="hidden md:block rounded-[16px] overflow-hidden"
           style={{
@@ -152,7 +209,7 @@ export default async function OppgaverSide() {
           </div>
 
           {/* Rader */}
-          {alleÅpne.map((o, i) => {
+          {filtrerte.map((o, i) => {
             const domene = o.domainId ? domeneFraId[o.domainId] : null;
             const { tekst: forfallT, farge: forfallF } = forfallTekst(o.forfall);
             return (
