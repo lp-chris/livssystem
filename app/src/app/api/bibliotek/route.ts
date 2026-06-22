@@ -20,3 +20,28 @@ export async function GET(req: NextRequest) {
   const items = await query;
   return NextResponse.json({ items });
 }
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  if (!body?.type) return NextResponse.json({ feil: "Mangler type" }, { status: 400 });
+
+  const [item] = await db
+    .insert(libraryItems)
+    .values({
+      type: body.type,
+      tittel: body.tittel ?? null,
+      innhold: body.innhold ?? null,
+      kilde: body.kilde ?? null,
+      forfatter: body.forfatter ?? null,
+      omslagUrl: body.omslagUrl ?? null,
+      isbn: body.isbn ?? null,
+      leseStatus: body.leseStatus ?? null,
+      rating: body.rating ?? null,
+      sammendrag: body.sammendrag ?? null,
+      domainId: body.domainId ?? null,
+      tags: body.tags ?? null,
+    })
+    .returning();
+
+  return NextResponse.json({ item }, { status: 201 });
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import LeggTilBokKnapp from "@/components/LeggTilBokKnapp";
 
 type Domene = { id: number; navn: string; farge: string };
 
@@ -276,6 +277,9 @@ export default function BibliiotekTabs({
       {/* Bøker */}
       {aktivFane === "bøker" && (
         <div>
+          <div className="flex justify-end mb-4">
+            <LeggTilBokKnapp />
+          </div>
           {bøker.length === 0 && (
             <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
               Ingen bøker ennå.
