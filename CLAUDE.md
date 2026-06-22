@@ -151,6 +151,9 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ## Siste endringer
 
 ### 2026-06-22
+- **Bibliotek: legg til bok** — Ny `LeggTilBokKnapp.tsx` med Open Library-søk (gratis API, ingen nøkkel) og autoutfylling av tittel/forfatter/omslag/ISBN. POST `/api/bibliotek` oppretter boken. Lese-status velges (Vil lese / Leser nå / Lest).
+- **Bok: manuell fallback + z-index** — Når Open Library ikke finner boken kan den legges inn manuelt (tittel + valgfri forfatter). Lagre-knapp styres av `kanLagre` (manuell tittel utfylt ELLER bok valgt). Modalen løftet fra `z-50` til `z-[60]` så den flytende fangst-knappen ikke dekker søkefeltet.
+- **gitignore** — La til `.next/` på rotnivå (strø-build havnet utenfor `app/`).
 - **Oppgaver: domenefiltere** — Pillerad (Alle / Meg / Oss / Stall / Hest) øverst på oppgaversiden. URL-basert (`?domene=Meg`), kombineres med sortering.
 - **Oppgaver: sortering** — Sorteringsknapper (Forfall / Prioritet / Domene / Nyeste) ved siden av «Øvrige»-overskriften på mobil. Desktop: klikke kolonneheader. Sorteres i JS etter henting, ingen ekstra DB-kall.
 - **Journal: prompts** — `NyJournalpostKnapp` viser et tilfeldig spørsmål ved åpning. Knapp for nytt spørsmål ↺. Pool på 12 norske journalprompts i komponenten.

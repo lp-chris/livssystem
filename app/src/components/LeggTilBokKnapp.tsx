@@ -30,6 +30,10 @@ export default function LeggTilBokKnapp() {
   const [søk, setSøk] = useState("");
   const [resultater, setResultater] = useState<OpenLibraryTreff[]>([]);
   const [søker, setSøker] = useState(false);
+  const [harSøkt, setHarSøkt] = useState(false);
+  const [manuell, setManuell] = useState(false);
+  const [manuellTittel, setManuellTittel] = useState("");
+  const [manuellForfatter, setManuellForfatter] = useState("");
   const [valgt, setValgt] = useState<ValgtBok | null>(null);
   const [leseStatus, setLeseStatus] = useState("vil_lese");
   const [lagrer, setLagrer] = useState(false);
@@ -40,16 +44,26 @@ export default function LeggTilBokKnapp() {
     if (!åpen) {
       setSøk("");
       setResultater([]);
+      setHarSøkt(false);
+      setManuell(false);
+      setManuellTittel("");
+      setManuellForfatter("");
       setValgt(null);
       setLeseStatus("vil_lese");
     }
   }, [åpen]);
 
+  function startManuell() {
+    setManuell(true);
+    setManuellTittel(søk.trim());
+    setResultater([]);
+  }
+
   function håndterSøk(tekst: string) {
     setSøk(tekst);
     setValgt(null);
     if (søkTimer.current) clearTimeout(søkTimer.current);
-    if (!tekst.trim()) { setResultater([]); return; }
+    if (!tekst.trim()) { setResultater([]); setHarSøkt(false); return; }
     søkTimer.current = setTimeout(async () => {
       setSøker(true);
       try {
@@ -62,6 +76,7 @@ export default function LeggTilBokKnapp() {
         setResultater([]);
       } finally {
         setSøker(false);
+        setHarSøkt(true);
       }
     }, 400);
   }
@@ -80,17 +95,18 @@ export default function LeggTilBokKnapp() {
   }
 
   async function lagre() {
-    if (!valgt) return;
+    const tittel = manuell ? manuellTittel.trim() : valgt?.tittel;
+    if (!tittel) return;
     setLagrer(true);
     await fetch("/api/bibliotek", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         type: "bok",
-        tittel: valgt.tittel,
-        forfatter: valgt.forfatter || null,
-        isbn: valgt.isbn || null,
-        omslagUrl: valgt.omslagUrl || null,
+        tittel,
+        forfatter: manuell ? manuellForfatter.trim() || null : valgt?.forfatter || null,
+        isbn: manuell ? null : valgt?.isbn || null,
+        omslagUrl: manuell ? null : valgt?.omslagUrl || null,
         leseStatus,
       }),
     });
@@ -98,6 +114,9 @@ export default function LeggTilBokKnapp() {
     setÅpen(false);
     router.refresh();
   }
+
+  const kanLagre = manuell ? manuellTittel.trim().length > 0 : valgt !== null;
+  const visStatus = manuell || valgt !== null;
 
   if (!åpen) {
     return (
@@ -114,7 +133,7 @@ export default function LeggTilBokKnapp() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center"
+      className="fixed inset-0 z-[60] flex items-end justify-center"
       style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
       onClick={(e) => { if (e.target === e.currentTarget) setÅpen(false); }}
     >
@@ -126,8 +145,43 @@ export default function LeggTilBokKnapp() {
           Legg til bok
         </h2>
 
-        {/* Valgt bok */}
-        {valgt ? (
+        {/* Manuell innlegging */}
+        {manuell ? (
+          <div className="space-y-2 mb-4">
+            <input
+              type="text"
+              autoFocus
+              placeholder="Tittel"
+              value={manuellTittel}
+              onChange={(e) => setManuellTittel(e.target.value)}
+              className="w-full rounded-[14px] px-4 py-3 text-sm focus:outline-none"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--ink)",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Forfatter (valgfritt)"
+              value={manuellForfatter}
+              onChange={(e) => setManuellForfatter(e.target.value)}
+              className="w-full rounded-[14px] px-4 py-3 text-sm focus:outline-none"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
+                color: "var(--ink)",
+              }}
+            />
+            <button
+              onClick={() => setManuell(false)}
+              className="text-xs px-1 min-h-[32px]"
+              style={{ color: "var(--muted)" }}
+            >
+              ← Søk i stedet
+            </button>
+          </div>
+        ) : valgt ? (
           <div
             className="flex gap-3 p-3 rounded-[16px] mb-4"
             style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}
@@ -238,8 +292,21 @@ export default function LeggTilBokKnapp() {
           </div>
         )}
 
-        {/* Lese-status (vises kun når bok er valgt) */}
-        {valgt && (
+        {/* Ikke funnet → manuell */}
+        {!manuell && !valgt && søk.trim() && (
+          <button
+            onClick={startManuell}
+            className="text-xs mb-4 px-1 min-h-[36px] flex items-center"
+            style={{ color: "var(--muted)" }}
+          >
+            {harSøkt && resultater.length === 0 && !søker
+              ? "Fant ingen treff — legg inn manuelt →"
+              : "Finner du ikke boken? Legg inn manuelt →"}
+          </button>
+        )}
+
+        {/* Lese-status */}
+        {visStatus && (
           <div className="mb-4">
             <p
               className="text-[11px] font-bold uppercase mb-2"
@@ -281,7 +348,7 @@ export default function LeggTilBokKnapp() {
           >
             Avbryt
           </button>
-          {valgt && (
+          {kanLagre && (
             <button
               onClick={lagre}
               disabled={lagrer}
