@@ -124,6 +124,13 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 
 ## Siste endringer
 
+### 2026-06-22
+- **Oppgaver: domenefiltere** — Pillerad (Alle / Meg / Oss / Stall / Hest) øverst på oppgaversiden. URL-basert (`?domene=Meg`), kombineres med sortering.
+- **Oppgaver: sortering** — Sorteringsknapper (Forfall / Prioritet / Domene / Nyeste) ved siden av «Øvrige»-overskriften på mobil. Desktop: klikke kolonneheader. Sorteres i JS etter henting, ingen ekstra DB-kall.
+- **Journal: prompts** — `NyJournalpostKnapp` viser et tilfeldig spørsmål ved åpning. Knapp for nytt spørsmål ↺. Pool på 12 norske journalprompts i komponenten.
+- **PWA-ikon** — Fikset `apple-touch-icon`-URL i `layout.tsx` og `manifest.json` til `/apple-icon` (uten `.png`). Tidligere pekte begge på `/apple-icon.png` → 404 → iOS viste fallback-bokstav.
+- **Rydde API-ruter** — Slettet duplikat-mapper med norske tegn (`api/milepæler/`, `api/prosjekter/[id]/milepæler/`). Kun ASCII-versjonene (`milestone/`, `milestones/`) beholdt.
+
 ### 2026-06-21
 - **UX: Kompakt avhuking i OppgaveKort** — `OppgaveKort.tsx` oppdatert til samme mønster som hjemskjerm-komponentene (Topp3, DetSomHaster): knapp er nå ren 44px touch-target, visuell sirkel er separat 22px `<div>` inni. Rad-padding redusert til `px-2 py-1`.
 - **Data: 36 oppgaver importert** — Oppgaver fra `✱ Prosjekter.md` lagt inn i databasen (Railway) uten domene/prosjekt-tilknytning. Lars kobler dem til riktige steder i ettertid.
