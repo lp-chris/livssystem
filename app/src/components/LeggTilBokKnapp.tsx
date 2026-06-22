@@ -34,6 +34,8 @@ export default function LeggTilBokKnapp() {
   const [manuell, setManuell] = useState(false);
   const [manuellTittel, setManuellTittel] = useState("");
   const [manuellForfatter, setManuellForfatter] = useState("");
+  const [manuellOmslag, setManuellOmslag] = useState<string | null>(null);
+  const [behandlerBilde, setBehandlerBilde] = useState(false);
   const [valgt, setValgt] = useState<ValgtBok | null>(null);
   const [leseStatus, setLeseStatus] = useState("vil_lese");
   const [lagrer, setLagrer] = useState(false);
@@ -48,6 +50,7 @@ export default function LeggTilBokKnapp() {
       setManuell(false);
       setManuellTittel("");
       setManuellForfatter("");
+      setManuellOmslag(null);
       setValgt(null);
       setLeseStatus("vil_lese");
     }
@@ -57,6 +60,30 @@ export default function LeggTilBokKnapp() {
     setManuell(true);
     setManuellTittel(søk.trim());
     setResultater([]);
+  }
+
+  // Krymp bildet i nettleseren og lagre som data-URL (maks 400px bred)
+  function håndterBilde(file: File) {
+    setBehandlerBilde(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maksBredde = 400;
+        const skala = Math.min(1, maksBredde / img.width);
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * skala);
+        c.height = Math.round(img.height * skala);
+        const ctx = c.getContext("2d");
+        ctx?.drawImage(img, 0, 0, c.width, c.height);
+        setManuellOmslag(c.toDataURL("image/jpeg", 0.8));
+        setBehandlerBilde(false);
+      };
+      img.onerror = () => setBehandlerBilde(false);
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => setBehandlerBilde(false);
+    reader.readAsDataURL(file);
   }
 
   function håndterSøk(tekst: string) {
@@ -106,7 +133,7 @@ export default function LeggTilBokKnapp() {
         tittel,
         forfatter: manuell ? manuellForfatter.trim() || null : valgt?.forfatter || null,
         isbn: manuell ? null : valgt?.isbn || null,
-        omslagUrl: manuell ? null : valgt?.omslagUrl || null,
+        omslagUrl: manuell ? manuellOmslag : valgt?.omslagUrl || null,
         leseStatus,
       }),
     });
@@ -173,6 +200,51 @@ export default function LeggTilBokKnapp() {
                 color: "var(--ink)",
               }}
             />
+
+            {/* Omslag-opplasting */}
+            <div className="flex items-center gap-3 pt-1">
+              {manuellOmslag ? (
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={manuellOmslag}
+                    alt=""
+                    className="w-14 h-20 object-cover rounded-[8px]"
+                    style={{ border: "1px solid var(--border)" }}
+                  />
+                  <button
+                    onClick={() => setManuellOmslag(null)}
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                    style={{ backgroundColor: "var(--ink)", color: "var(--surface)" }}
+                    aria-label="Fjern omslag"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className="flex items-center gap-2 px-4 py-3 rounded-[14px] text-sm cursor-pointer"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    border: "1px dashed var(--border)",
+                    color: "var(--muted)",
+                  }}
+                >
+                  {behandlerBilde ? "Behandler…" : "📷 Last opp omslag"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) håndterBilde(f);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+
             <button
               onClick={() => setManuell(false)}
               className="text-xs px-1 min-h-[32px]"
