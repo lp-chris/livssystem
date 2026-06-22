@@ -21,6 +21,7 @@ const typeEtikett: Record<string, string> = {
   notat: "Notat",
   sitat: "Sitat",
   bok: "Bok",
+  journal: "Journal",
 };
 
 export default function SisteFangster({ oppdater }: { oppdater?: number }) {
@@ -36,31 +37,51 @@ export default function SisteFangster({ oppdater }: { oppdater?: number }) {
   if (fangster.length === 0) return null;
 
   return (
-    <section>
-      <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
-        Nylig lagt til
+    <section className="mb-8">
+      <h2
+        className="text-[11px] font-bold uppercase mb-3"
+        style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+      >
+        Nylig fanget
       </h2>
       <div className="space-y-2">
         {fangster.map((f) => (
           <div
             key={f.id}
-            className="bg-white rounded-lg px-4 py-3 shadow-sm text-sm"
+            className="flex items-center justify-between px-4 py-3 rounded-[14px]"
+            style={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+            }}
           >
-            <div className="flex items-start justify-between gap-2">
-              <span className="text-gray-900 flex-1 min-w-0 truncate">
-                {f.tolketJson?.tittel ?? f.råTekst}
-              </span>
+            <span
+              className="text-sm flex-1 min-w-0 truncate"
+              style={{ color: "var(--ink)" }}
+            >
+              {f.tolketJson?.tittel ?? f.råTekst}
+            </span>
+            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+              {f.tolketJson?.domene && (
+                <span
+                  className="text-[11px]"
+                  style={{ color: "var(--muted)" }}
+                >
+                  {f.tolketJson.domene}
+                </span>
+              )}
               {f.tolketJson?.type && (
-                <span className="text-xs text-gray-400 flex-shrink-0">
+                <span
+                  className="text-[11px] px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    color: "var(--muted)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
                   {typeEtikett[f.tolketJson.type] ?? f.tolketJson.type}
                 </span>
               )}
             </div>
-            {f.tolketJson?.domene && (
-              <div className="text-xs text-gray-400 mt-0.5">
-                {f.tolketJson.domene}
-              </div>
-            )}
           </div>
         ))}
       </div>

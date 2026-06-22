@@ -5,6 +5,7 @@ import { tasks, domains } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import OppgaveKort from "@/components/OppgaveKort";
 import NyOppgaveKnapp from "@/components/NyOppgaveKnapp";
+import SisteFangster from "@/components/SisteFangster";
 import Link from "next/link";
 
 const PRIORITET_FARGE: Record<string, string> = {
@@ -58,6 +59,8 @@ export default async function OppgaverSide() {
         </div>
         <NyOppgaveKnapp />
       </header>
+
+      <SisteFangster />
 
       {alleÅpne.length === 0 && (
         <div className="text-center py-16">
