@@ -56,7 +56,7 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
 
   return (
     <div
-      className="rounded-[22px] px-4 py-3"
+      className="rounded-[22px]"
       style={{
         backgroundColor: "var(--card)",
         border: "1px solid var(--border)",
@@ -64,19 +64,21 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
         transition: "opacity 0.2s",
       }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center px-2 py-1">
         <button
           onClick={markerFerdig}
           aria-label="Marker som gjort"
-          className="flex items-center justify-center rounded-full flex-shrink-0 transition-colors min-w-[44px] min-h-[44px]"
-          style={{
-            width: 28,
-            height: 28,
-            border: "2px solid var(--border)",
-            color: "var(--muted)",
-          }}
+          className="flex items-center justify-center flex-shrink-0 transition-colors"
+          style={{ minWidth: 44, minHeight: 44 }}
         >
-          ✓
+          <div
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              border: "1.8px solid #D8D3C8",
+            }}
+          />
         </button>
 
         <Link href={`/oppgaver/${oppgave.id}`} className="flex-1 min-w-0 min-h-[44px] flex flex-col justify-center">
@@ -105,7 +107,7 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
 
       {oppgave.notat && (
         <p
-          className="text-xs mt-2 ml-[52px] leading-relaxed"
+          className="text-xs mt-1 mb-2 ml-[52px] leading-relaxed"
           style={{ color: "var(--ink-3)" }}
         >
           {oppgave.notat}

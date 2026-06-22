@@ -119,3 +119,11 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 - Hold endringer små og testbare. Commit ofte til GitHub.
 - Spør hvis noe i datamodellen er uklart heller enn å gjette stort.
 - Norsk i alt brukervendt.
+
+---
+
+## Siste endringer
+
+### 2026-06-21
+- **UX: Kompakt avhuking i OppgaveKort** — `OppgaveKort.tsx` oppdatert til samme mønster som hjemskjerm-komponentene (Topp3, DetSomHaster): knapp er nå ren 44px touch-target, visuell sirkel er separat 22px `<div>` inni. Rad-padding redusert til `px-2 py-1`.
+- **Data: 36 oppgaver importert** — Oppgaver fra `✱ Prosjekter.md` lagt inn i databasen (Railway) uten domene/prosjekt-tilknytning. Lars kobler dem til riktige steder i ettertid.
