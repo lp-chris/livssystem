@@ -113,6 +113,32 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 
 ---
 
+## Idéliste (notert 2026-06-22 — ikke prioritert)
+
+### Oppgaver og prosjekter
+- **Tilbakevendende oppgaver** — Schemaet har allerede `tilbakevendende_regel`-feltet, men logikken er ikke implementert. Eks: "Vei hestene" månedlig, "Ring lege" halvårlig.
+- **"Denne uken"-modus** — Ukesplanlegging: dra oppgaver inn i en "denne uken"-bøtte. Vises på hjemskjermen i stedet for/under topp 3. Mer fleksibel enn fast topp 3.
+- **Slipp-score** — Vis antall dager en oppgave har ligget forfalt. Gjør det åpenbart hva som aldri blir gjort og bør slettes eller arkiveres.
+
+### Hestespesifikt
+- **Helselogg per hest** — Notatfelt koblet til en hest-entitet: skoing, vaksine, vet-besøk, hvileperioder. Tidslinje-visning. Mer målrettet enn å drukne dette i oppgaver.
+- **Treningslogg** — Logg trening per hest med dato, type og kommentar. Graf over treningsfrekvens. Kan bygges på bibliotek-strukturen.
+
+### Journal og bibliotek
+- **"Du skrev dette i går"** — Øverst på journalsiden: gårsdagens post som stille refleksjonspåminnelse.
+- **Bok-fremgang** — Logg sider eller prosent mens du leser. Fremgangsbar på bokkortene.
+
+### Hjemskjerm og innsikt
+- **Domene-balanse** — Visuelt hint (fire fargede streker) som viser om ett domene har vært ignorert en stund. Eks: "Du har ikke gjort noe i Meg på 9 dager."
+- **Ukesgjennomgang** — Dedikert fredag-visning: hva ble fullført, hva ble ikke gjort, hva nærmer seg neste uke. Ingen AI — aggregert data presentert pent.
+- **Mørk modus** — Praktisk i stall-kontekst om kvelden eller tidlig morgen.
+
+### Mer ambisiøst
+- **AI ukesoppsummering på Pushover** — Automatisk søndag kveld via cron: "5 oppgaver fullført, 3 forfalt, 2 milepæler nærmer seg."
+- **Fangst-korreksjon** — Én knapp i "nylig fanget" for å flytte feilrutet innhold til riktig sted, uten å måtte lete det opp manuelt.
+
+---
+
 ## Arbeidsmåte
 
 - Bygg én fase ferdig og testet før neste.
