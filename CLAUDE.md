@@ -151,6 +151,7 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ## Siste endringer
 
 ### 2026-06-22
+- **Bok: score, tanker og omslag** — Bok-detaljsiden viser nå omslagsbildet (hentes automatisk fra Open Library), en stjerne-score (`BokRating.tsx`, 1–5, trykk samme stjerne igjen for å nullstille → `rating`) og et fritekstfelt «Hva jeg tenker» (`BokTanker.tsx` → lagres i `sammendrag`, lagre-knapp vises kun ved endring). PATCH `/api/bibliotek/[id]` støtter nå `sammendrag`. Bokkortene i listen viser omslag-miniatyr og stjerner.
 - **Bibliotek: legg til bok** — Ny `LeggTilBokKnapp.tsx` med Open Library-søk (gratis API, ingen nøkkel) og autoutfylling av tittel/forfatter/omslag/ISBN. POST `/api/bibliotek` oppretter boken. Lese-status velges (Vil lese / Leser nå / Lest).
 - **Bok: manuell fallback + z-index** — Når Open Library ikke finner boken kan den legges inn manuelt (tittel + valgfri forfatter). Lagre-knapp styres av `kanLagre` (manuell tittel utfylt ELLER bok valgt). Modalen løftet fra `z-50` til `z-[60]` så den flytende fangst-knappen ikke dekker søkefeltet.
 - **gitignore** — La til `.next/` på rotnivå (strø-build havnet utenfor `app/`).

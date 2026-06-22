@@ -14,6 +14,8 @@ type LibraryItem = {
   kilde: string | null;
   forfatter: string | null;
   leseStatus: string | null;
+  omslagUrl: string | null;
+  rating: number | null;
   favoritt: boolean;
   tags: string[] | null;
   domainId: number | null;
@@ -296,7 +298,21 @@ export default function BibliiotekTabs({
                   border: "1px solid var(--border)",
                 }}
               >
-                <span style={{ color: "var(--hest)", fontSize: 18 }}>❧</span>
+                {b.omslagUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={b.omslagUrl}
+                    alt=""
+                    className="w-10 h-14 object-cover rounded-[6px] flex-shrink-0"
+                  />
+                ) : (
+                  <div
+                    className="w-10 h-14 rounded-[6px] flex-shrink-0 flex items-center justify-center"
+                    style={{ backgroundColor: "var(--surface)", color: "var(--hest)", fontSize: 18 }}
+                  >
+                    ❧
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div
                     className="text-sm font-medium truncate"
@@ -310,6 +326,14 @@ export default function BibliiotekTabs({
                       style={{ color: "var(--muted)" }}
                     >
                       {b.forfatter}
+                    </div>
+                  )}
+                  {b.rating != null && b.rating > 0 && (
+                    <div className="text-xs mt-0.5" style={{ color: "var(--hest)" }}>
+                      {"★".repeat(b.rating)}
+                      <span style={{ color: "var(--border)" }}>
+                        {"★".repeat(5 - b.rating)}
+                      </span>
                     </div>
                   )}
                 </div>

@@ -8,6 +8,8 @@ import { notFound } from "next/navigation";
 import FavorittKnapp from "@/components/FavorittKnapp";
 import LeggTilTanke from "@/components/LeggTilTanke";
 import LeseStatusVelger from "@/components/LeseStatusVelger";
+import BokRating from "@/components/BokRating";
+import BokTanker from "@/components/BokTanker";
 import SlettBibliotekElement from "@/components/SlettBibliotekElement";
 import NotatDetalj from "@/components/NotatDetalj";
 
@@ -53,22 +55,37 @@ export default async function BibliotekDetaljSide({
         {/* Bok */}
         {item.type === "bok" && (
           <>
-            <div>
-              <h1 className="text-xl font-semibold" style={{ color: "var(--ink)" }}>
-                {item.tittel}
-              </h1>
-              {item.forfatter && (
-                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  {item.forfatter}
-                </p>
+            <div className="flex gap-4">
+              {item.omslagUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.omslagUrl}
+                  alt=""
+                  className="w-24 h-36 object-cover rounded-[12px] flex-shrink-0"
+                  style={{ border: "1px solid var(--border)" }}
+                />
+              ) : (
+                <div
+                  className="w-24 h-36 rounded-[12px] flex-shrink-0 flex items-center justify-center text-3xl"
+                  style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}
+                >
+                  📖
+                </div>
               )}
+              <div className="flex-1 min-w-0 pt-1">
+                <h1 className="text-xl font-semibold" style={{ color: "var(--ink)" }}>
+                  {item.tittel}
+                </h1>
+                {item.forfatter && (
+                  <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                    {item.forfatter}
+                  </p>
+                )}
+              </div>
             </div>
             <LeseStatusVelger id={item.id} status={item.leseStatus ?? "vil_lese"} />
-            {item.sammendrag && (
-              <p className="text-sm leading-relaxed" style={{ color: "var(--ink-2)" }}>
-                {item.sammendrag}
-              </p>
-            )}
+            <BokRating id={item.id} rating={item.rating} />
+            <BokTanker id={item.id} sammendrag={item.sammendrag} />
           </>
         )}
 
