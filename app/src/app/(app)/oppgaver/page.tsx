@@ -2,10 +2,9 @@ export const dynamic = "force-dynamic";
 
 import { db } from "@/db";
 import { tasks, domains } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 import OppgaveKort from "@/components/OppgaveKort";
 import NyOppgaveKnapp from "@/components/NyOppgaveKnapp";
-import SisteFangster from "@/components/SisteFangster";
 import Link from "next/link";
 
 const PRIORITET_FARGE: Record<string, string> = {
@@ -20,31 +19,73 @@ const PRIORITET_ETIKETT: Record<string, string> = {
   lav: "Lav",
 };
 
+const PRIORITET_RANG: Record<string, number> = { høy: 0, normal: 1, lav: 2 };
+
 function forfallTekst(forfall: string | null): { tekst: string; farge: string } {
   if (!forfall) return { tekst: "Ingen frist", farge: "var(--muted)" };
   const iDag = new Date().toISOString().split("T")[0];
-  if (forfall < iDag)
-    return { tekst: `${forfall} ⚠`, farge: "#BE6B52" };
+  if (forfall < iDag) return { tekst: `${forfall} ⚠`, farge: "#BE6B52" };
   if (forfall === iDag) return { tekst: "I dag", farge: "var(--hest)" };
   const d = new Date(forfall);
-  const tekst = d.toLocaleDateString("nb-NO", { day: "numeric", month: "short" });
-  return { tekst, farge: "var(--ink-3)" };
+  return {
+    tekst: d.toLocaleDateString("nb-NO", { day: "numeric", month: "short" }),
+    farge: "var(--ink-3)",
+  };
 }
+
+type Sortering = "forfall" | "prioritet" | "domene" | "opprettet";
+
+function sorterOppgaver(
+  oppgaver: Awaited<ReturnType<typeof hentÅpneOppgaver>>,
+  domeneFraId: Record<number, { navn: string }>,
+  sortering: Sortering
+) {
+  return [...oppgaver].sort((a, b) => {
+    switch (sortering) {
+      case "prioritet":
+        return (PRIORITET_RANG[a.prioritet] ?? 1) - (PRIORITET_RANG[b.prioritet] ?? 1);
+      case "domene": {
+        const da = a.domainId ? (domeneFraId[a.domainId]?.navn ?? "") : "";
+        const db2 = b.domainId ? (domeneFraId[b.domainId]?.navn ?? "") : "";
+        return da.localeCompare(db2, "nb");
+      }
+      case "opprettet":
+        return new Date(b.opprettet).getTime() - new Date(a.opprettet).getTime();
+      default: {
+        if (!a.forfall && !b.forfall) return 0;
+        if (!a.forfall) return 1;
+        if (!b.forfall) return -1;
+        return a.forfall.localeCompare(b.forfall);
+      }
+    }
+  });
+}
+
+async function hentÅpneOppgaver() {
+  return db.select().from(tasks).where(eq(tasks.status, "åpen"));
+}
+
+const SORTERINGER: { verdi: Sortering; etikett: string }[] = [
+  { verdi: "forfall", etikett: "Forfall" },
+  { verdi: "prioritet", etikett: "Prioritet" },
+  { verdi: "domene", etikett: "Domene" },
+  { verdi: "opprettet", etikett: "Nyeste" },
+];
 
 export default async function OppgaverSide({
   searchParams,
 }: {
-  searchParams: Promise<{ domene?: string }>;
+  searchParams: Promise<{ domene?: string; sorter?: string }>;
 }) {
-  const { domene: valgtDomeneNavn } = await searchParams;
+  const { domene: valgtDomeneNavn, sorter } = await searchParams;
+  const sortering: Sortering =
+    sorter === "prioritet" || sorter === "domene" || sorter === "opprettet"
+      ? sorter
+      : "forfall";
 
   const [alleÅpne, alleDomener] = await Promise.all([
-    db
-      .select()
-      .from(tasks)
-      .where(eq(tasks.status, "åpen"))
-      .orderBy(tasks.forfall, tasks.prioritet),
-    db.select().from(domains).orderBy(domains.rekkefølge),
+    hentÅpneOppgaver(),
+    db.select().from(domains).orderBy(asc(domains.rekkefølge)),
   ]);
 
   const domeneFraId = Object.fromEntries(alleDomener.map((d) => [d.id, d]));
@@ -58,7 +99,19 @@ export default async function OppgaverSide({
     : alleÅpne;
 
   const topp3 = filtrerte.filter((o) => o.topp3);
-  const andre = filtrerte.filter((o) => !o.topp3);
+  const andre = sorterOppgaver(
+    filtrerte.filter((o) => !o.topp3),
+    domeneFraId,
+    sortering
+  );
+
+  function lagUrl(params: Record<string, string | undefined>) {
+    const p = new URLSearchParams();
+    if (valgtDomeneNavn && params.domene !== "") p.set("domene", params.domene ?? valgtDomeneNavn);
+    if (params.sorter ?? sorter) p.set("sorter", params.sorter ?? sorter ?? "");
+    const str = p.toString();
+    return `/oppgaver${str ? `?${str}` : ""}`;
+  }
 
   return (
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-none md:px-10 md:pt-10">
@@ -75,9 +128,9 @@ export default async function OppgaverSide({
       </header>
 
       {/* Domenefiltere */}
-      <div className="flex gap-2 flex-wrap mb-8">
+      <div className="flex gap-2 flex-wrap mb-4">
         <Link
-          href="/oppgaver"
+          href={lagUrl({ domene: "" })}
           className="px-3 py-1.5 rounded-full text-[13px] font-medium min-h-[36px] flex items-center"
           style={{
             backgroundColor: !valgtDomene ? "var(--ink)" : "var(--card)",
@@ -92,7 +145,7 @@ export default async function OppgaverSide({
           return (
             <Link
               key={d.id}
-              href={aktiv ? "/oppgaver" : `/oppgaver?domene=${d.navn}`}
+              href={aktiv ? lagUrl({ domene: "" }) : lagUrl({ domene: d.navn })}
               className="px-3 py-1.5 rounded-full text-[13px] font-medium min-h-[36px] flex items-center gap-1.5"
               style={{
                 backgroundColor: aktiv ? "var(--ink)" : "var(--card)",
@@ -101,14 +154,13 @@ export default async function OppgaverSide({
               }}
             >
               <span
-                className="rounded-full"
+                className="rounded-full flex-none"
                 style={{
                   width: 7,
                   height: 7,
                   backgroundColor: aktiv
                     ? "var(--surface)"
                     : `var(--${d.navn.toLowerCase()})`,
-                  flexShrink: 0,
                 }}
               />
               {d.navn}
@@ -116,8 +168,6 @@ export default async function OppgaverSide({
           );
         })}
       </div>
-
-      <SisteFangster />
 
       {filtrerte.length === 0 && (
         <div className="text-center py-16">
@@ -147,12 +197,32 @@ export default async function OppgaverSide({
 
         {andre.length > 0 && (
           <section>
-            <h2
-              className="text-[11px] font-bold uppercase mb-3"
-              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
-            >
-              Øvrige
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="text-[11px] font-bold uppercase"
+                style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+              >
+                Øvrige
+              </h2>
+              <div className="flex gap-1">
+                {SORTERINGER.map((s) => (
+                  <Link
+                    key={s.verdi}
+                    href={lagUrl({ sorter: s.verdi })}
+                    className="text-[11px] px-2 py-1 rounded-full min-h-[28px] flex items-center"
+                    style={{
+                      backgroundColor:
+                        sortering === s.verdi ? "var(--ink)" : "var(--card)",
+                      color:
+                        sortering === s.verdi ? "var(--surface)" : "var(--muted)",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    {s.etikett}
+                  </Link>
+                ))}
+              </div>
+            </div>
             <div className="space-y-2">
               {andre.map((o) => (
                 <OppgaveKort key={o.id} oppgave={o} />
@@ -171,7 +241,6 @@ export default async function OppgaverSide({
             border: "1px solid var(--border)",
           }}
         >
-          {/* Kolonneheader */}
           <div
             className="grid items-center px-5 py-3"
             style={{
@@ -182,33 +251,27 @@ export default async function OppgaverSide({
             }}
           >
             <div />
-            <div
-              className="text-[11px] font-bold uppercase"
-              style={{ letterSpacing: "0.06em", color: "var(--muted)" }}
-            >
-              Oppgave
-            </div>
-            <div
-              className="text-[11px] font-bold uppercase"
-              style={{ letterSpacing: "0.06em", color: "var(--muted)" }}
-            >
-              Domene
-            </div>
-            <div
-              className="text-[11px] font-bold uppercase"
-              style={{ letterSpacing: "0.06em", color: "var(--muted)" }}
-            >
-              Forfall
-            </div>
-            <div
-              className="text-[11px] font-bold uppercase"
-              style={{ letterSpacing: "0.06em", color: "var(--muted)" }}
-            >
-              Prioritet
-            </div>
+            <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: "0.06em", color: "var(--muted)" }}>Oppgave</div>
+            {[
+              { verdi: "domene" as Sortering, etikett: "Domene" },
+              { verdi: "forfall" as Sortering, etikett: "Forfall" },
+              { verdi: "prioritet" as Sortering, etikett: "Prioritet" },
+            ].map((kol) => (
+              <Link
+                key={kol.verdi}
+                href={lagUrl({ sorter: kol.verdi })}
+                className="text-[11px] font-bold uppercase flex items-center gap-1"
+                style={{
+                  letterSpacing: "0.06em",
+                  color: sortering === kol.verdi ? "var(--ink)" : "var(--muted)",
+                }}
+              >
+                {kol.etikett}
+                {sortering === kol.verdi && <span>↑</span>}
+              </Link>
+            ))}
           </div>
 
-          {/* Rader */}
           {filtrerte.map((o, i) => {
             const domene = o.domainId ? domeneFraId[o.domainId] : null;
             const { tekst: forfallT, farge: forfallF } = forfallTekst(o.forfall);
@@ -228,41 +291,24 @@ export default async function OppgaverSide({
                   style={{
                     width: 24,
                     height: 24,
-                    border: o.topp3
-                      ? "2px solid var(--hest)"
-                      : "1.8px solid var(--border)",
+                    border: o.topp3 ? "2px solid var(--hest)" : "1.8px solid var(--border)",
                     flexShrink: 0,
                   }}
                 />
-                <div
-                  className="text-[15px] font-medium truncate"
-                  style={{ color: "var(--ink)" }}
-                >
+                <div className="text-[15px] font-medium truncate" style={{ color: "var(--ink)" }}>
                   {o.tittel}
                 </div>
-                <div
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: "var(--ink-3)" }}
-                >
+                <div className="flex items-center gap-2 text-sm" style={{ color: "var(--ink-3)" }}>
                   {domene && (
                     <div
                       className="rounded-full flex-none"
-                      style={{
-                        width: 8,
-                        height: 8,
-                        backgroundColor: `var(--${domene.navn.toLowerCase()})`,
-                      }}
+                      style={{ width: 8, height: 8, backgroundColor: `var(--${domene.navn.toLowerCase()})` }}
                     />
                   )}
                   {domene?.navn ?? "—"}
                 </div>
-                <div className="text-sm font-medium" style={{ color: forfallF }}>
-                  {forfallT}
-                </div>
-                <div
-                  className="text-[13px] font-semibold"
-                  style={{ color: PRIORITET_FARGE[o.prioritet] }}
-                >
+                <div className="text-sm font-medium" style={{ color: forfallF }}>{forfallT}</div>
+                <div className="text-[13px] font-semibold" style={{ color: PRIORITET_FARGE[o.prioritet] }}>
                   {PRIORITET_ETIKETT[o.prioritet]}
                 </div>
               </Link>
