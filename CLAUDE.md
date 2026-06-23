@@ -116,7 +116,8 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ## Idéliste (notert 2026-06-22 — ikke prioritert)
 
 ### Oppgaver og prosjekter
-- **Tilbakevendende oppgaver** — Schemaet har allerede `tilbakevendende_regel`-feltet, men logikken er ikke implementert. Eks: "Vei hestene" månedlig, "Ring lege" halvårlig.
+- ✅ **Tilbakevendende oppgaver** — Implementert: `tilbakevendendeRegel` på oppgaver, og `/api/oppgaver/[id]` oppretter neste forekomst når en tilbakevendende oppgave fullføres.
+- ✅ **Fangst-korreksjon** — Implementert 2026-06-23. Trykk på en rad i «Nylig fanget» → flytt til riktig domene (Meg/Oss/Stall/Hest eller uten). `PATCH /api/capture/[id]` oppdaterer både elementet (via `rutetTil`) og fangst-raden.
 - **"Denne uken"-modus** — Ukesplanlegging: dra oppgaver inn i en "denne uken"-bøtte. Vises på hjemskjermen i stedet for/under topp 3. Mer fleksibel enn fast topp 3.
 - **Slipp-score** — Vis antall dager en oppgave har ligget forfalt. Gjør det åpenbart hva som aldri blir gjort og bør slettes eller arkiveres.
 
@@ -149,6 +150,10 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ---
 
 ## Siste endringer
+
+### 2026-06-23
+- **Fangst-korreksjon** — «Nylig fanget» (`SisteFangster.tsx`) er nå interaktiv: trykk på en rad for å åpne en domene-velger og flytte feilrutet innhold til riktig domene (Meg/Oss/Stall/Hest), eller fjerne domenet. Nytt endepunkt `PATCH /api/capture/[id]` slår opp `rutetTil` og oppdaterer riktig tabell (`tasks`/`routines`/`libraryItems`) samt fangst-radens `tolketJson.domene`. Avgrenset til domene-bytte; å flytte mellom typer (f.eks. oppgave→notat) er ikke med.
+- **Doc-rettelse** — Idélisten påsto at tilbakevendende oppgaver ikke var implementert; det er de (markert ✅).
 
 ### 2026-06-22
 - **Bok: last opp eget omslag (manuelle bøker)** — I manuell-modus i `LeggTilBokKnapp.tsx` kan man nå laste opp et omslagsbilde. Bildet krympes i nettleseren (canvas, maks 400px bredt, JPEG q0.8) og lagres som data-URL i `omslagUrl` — ingen ekstern bildelagring, fungerer på Railways efemere filsystem. Forhåndsvisning med ×-knapp for å fjerne. Valgt på samme måte som auto-omslag fra Open Library.
