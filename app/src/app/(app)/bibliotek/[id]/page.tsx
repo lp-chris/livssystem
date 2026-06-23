@@ -9,6 +9,7 @@ import FavorittKnapp from "@/components/FavorittKnapp";
 import LeggTilTanke from "@/components/LeggTilTanke";
 import LeseStatusVelger from "@/components/LeseStatusVelger";
 import BokRating from "@/components/BokRating";
+import BokSammendrag from "@/components/BokSammendrag";
 import BokTanker from "@/components/BokTanker";
 import SlettBibliotekElement from "@/components/SlettBibliotekElement";
 import NotatDetalj from "@/components/NotatDetalj";
@@ -85,6 +86,11 @@ export default async function BibliotekDetaljSide({
             </div>
             <LeseStatusVelger id={item.id} status={item.leseStatus ?? "vil_lese"} />
             <BokRating id={item.id} rating={item.rating} />
+            <BokSammendrag
+              id={item.id}
+              sammendrag={item.aiSammendrag}
+              takeaways={item.aiTakeaways}
+            />
             <BokTanker id={item.id} sammendrag={item.sammendrag} />
           </>
         )}

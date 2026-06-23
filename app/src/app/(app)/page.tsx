@@ -93,6 +93,14 @@ export default async function IDag() {
           >
             🔍
           </Link>
+          <Link
+            href="/innstillinger"
+            aria-label="Innstillinger"
+            className="md:hidden flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full"
+            style={{ color: "var(--muted)", fontSize: 20 }}
+          >
+            ⚙
+          </Link>
           <LoggUtKnapp />
         </div>
       </header>

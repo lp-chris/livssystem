@@ -152,6 +152,7 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ## Siste endringer
 
 ### 2026-06-23
+- **Bok: AI-sammendrag med key take-outs** — Ny `BokSammendrag.tsx` på bok-detaljsiden. Knapp «✨ Lag AI-sammendrag» kaller `POST /api/bibliotek/[id]/sammendrag`, som sender tittel + forfatter til Anthropic (`claude-haiku-4-5`) og får tilbake JSON med `oppsummering` + `takeaways[]`. Lagres i to nye `library_items`-felt: `ai_sammendrag` (text) og `ai_takeaways` (text array). Viser oppsummering + punktliste, med «↻ Lag på nytt»-knapp. Prompten ber modellen være ærlig hvis den ikke kjenner boken, ikke dikte. Fritekstfeltet «Hva jeg tenker» (`sammendrag`) er urørt — det er Lars' egne meninger, AI-sammendraget er separat. Schema dyttet med `db:push`.
 - **Fangst-korreksjon** — «Nylig fanget» (`SisteFangster.tsx`) er nå interaktiv: trykk på en rad for å åpne en domene-velger og flytte feilrutet innhold til riktig domene (Meg/Oss/Stall/Hest), eller fjerne domenet. Nytt endepunkt `PATCH /api/capture/[id]` slår opp `rutetTil` og oppdaterer riktig tabell (`tasks`/`routines`/`libraryItems`) samt fangst-radens `tolketJson.domene`. Avgrenset til domene-bytte; å flytte mellom typer (f.eks. oppgave→notat) er ikke med.
 - **Doc-rettelse** — Idélisten påsto at tilbakevendende oppgaver ikke var implementert; det er de (markert ✅).
 

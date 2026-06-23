@@ -94,6 +94,25 @@ export default function SidebarNav() {
           </div>
         ))}
       </div>
+
+      <div className="mt-auto px-3 pb-6">
+        <Link
+          href="/innstillinger"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-[11px] text-[15px] transition-colors"
+          style={{
+            backgroundColor: pathname.startsWith("/innstillinger")
+              ? "var(--ink)"
+              : "transparent",
+            color: pathname.startsWith("/innstillinger")
+              ? "var(--surface)"
+              : "var(--ink-3)",
+            fontWeight: pathname.startsWith("/innstillinger") ? 500 : 400,
+          }}
+        >
+          <span className="text-lg leading-none w-5 text-center">⚙</span>
+          Innstillinger
+        </Link>
+      </div>
     </aside>
   );
 }

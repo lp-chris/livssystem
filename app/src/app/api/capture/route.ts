@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@/db";
 import { captures, tasks, routines, libraryItems, domains } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { loggApiBruk } from "@/lib/apiBruk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -47,9 +48,11 @@ Tags-regler (kun for notat, sitat, bok):
 - Eksempler: "stall", "trening", "økonomi", "helse", "lesing", "planlegging", "idé"
 - For oppgave/rutine/journal: returner tom array []`;
 
+const MODELL = "claude-haiku-4-5";
+
 async function rutMedAI(tekst: string) {
   const response = await client.messages.create({
-    model: "claude-haiku-4-5",
+    model: MODELL,
     max_tokens: 512,
     system: RUTING_PROMPT,
     messages: [{ role: "user", content: tekst }],
@@ -68,7 +71,13 @@ async function rutMedAI(tekst: string) {
     jsonTekst = jsonTekst.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
   }
 
-  return JSON.parse(jsonTekst);
+  return {
+    tolket: JSON.parse(jsonTekst),
+    bruk: {
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    },
+  };
 }
 
 async function lagreRutet(tolket: Record<string, unknown>) {
@@ -199,7 +208,16 @@ export async function POST(req: NextRequest) {
     .returning();
 
   try {
-    const tolket = await rutMedAI(råTekst);
+    const { tolket, bruk } = await rutMedAI(råTekst);
+
+    await loggApiBruk({
+      tjeneste: "anthropic",
+      modell: MODELL,
+      endepunkt: "capture",
+      inputTokens: bruk.inputTokens,
+      outputTokens: bruk.outputTokens,
+    });
+
     const rutetTil = await lagreRutet(tolket);
 
     await db

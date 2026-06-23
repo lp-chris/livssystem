@@ -154,6 +154,8 @@ export const libraryItems = pgTable("library_items", {
   rating: integer("rating"),
   isbn: text("isbn"),
   sammendrag: text("sammendrag"),
+  aiSammendrag: text("ai_sammendrag"),
+  aiTakeaways: text("ai_takeaways").array(),
 });
 
 export const libraryThoughts = pgTable("library_thoughts", {
@@ -171,5 +173,18 @@ export const captures = pgTable("captures", {
   tolketJson: jsonb("tolket_json"),
   rutetTil: jsonb("rutet_til"),
   status: captureStatusEnum("status").notNull().default("venter"),
+  opprettet: timestamp("opprettet").notNull().defaultNow(),
+});
+
+// Logg over API-bruk (Anthropic m.fl.) for kostnadsoversikt.
+// Lagrer rå token-tall + modell; kroner regnes ut i visningslaget
+// fra en prisliste, så historikk ikke fryser feil pris/kurs.
+export const apiUsage = pgTable("api_usage", {
+  id: serial("id").primaryKey(),
+  tjeneste: text("tjeneste").notNull(), // f.eks. "anthropic"
+  modell: text("modell").notNull(), // f.eks. "claude-haiku-4-5"
+  endepunkt: text("endepunkt").notNull(), // f.eks. "capture"
+  inputTokens: integer("input_tokens").notNull().default(0),
+  outputTokens: integer("output_tokens").notNull().default(0),
   opprettet: timestamp("opprettet").notNull().defaultNow(),
 });
