@@ -274,7 +274,7 @@ export default async function OppgaverSide({
             ))}
           </div>
 
-          {filtrerte.map((o, i) => {
+          {sorterte.map((o, i) => {
             const domene = o.domainId ? domeneFraId[o.domainId] : null;
             const { tekst: forfallT, farge: forfallF } = forfallTekst(o.forfall);
             return (
