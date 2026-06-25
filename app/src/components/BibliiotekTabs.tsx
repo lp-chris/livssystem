@@ -41,6 +41,7 @@ export default function BibliiotekTabs({
   const [aktivFane, setAktivFane] = useState<Fane>("notater");
   const [aktivTag, setAktivTag] = useState<string | null>(null);
   const [aktivDomene, setAktivDomene] = useState<number | null>(null);
+  const [aktivBokStatus, setAktivBokStatus] = useState<string | null>(null);
 
   const notater = items.filter((i) => i.type === "notat");
   const sitater = items.filter((i) => i.type === "sitat");
@@ -72,10 +73,15 @@ export default function BibliiotekTabs({
     return true;
   });
 
+  const filtrertBøker = aktivBokStatus
+    ? bøker.filter((b) => (b.leseStatus ?? "vil_lese") === aktivBokStatus)
+    : bøker;
+
   function byttFane(fane: Fane) {
     setAktivFane(fane);
     setAktivTag(null);
     setAktivDomene(null);
+    setAktivBokStatus(null);
   }
 
   return (
@@ -280,7 +286,40 @@ export default function BibliiotekTabs({
       {/* Bøker */}
       {aktivFane === "bøker" && (
         <div>
-          <div className="flex justify-end mb-4">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            {bøker.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { verdi: "vil_lese", etikett: "Vil lese" },
+                  { verdi: "leser", etikett: "Leser nå" },
+                  { verdi: "fullført", etikett: "Lest" },
+                ].map((s) => {
+                  const antall = bøker.filter(
+                    (b) => (b.leseStatus ?? "vil_lese") === s.verdi
+                  ).length;
+                  const aktiv = aktivBokStatus === s.verdi;
+                  return (
+                    <button
+                      key={s.verdi}
+                      onClick={() => setAktivBokStatus(aktiv ? null : s.verdi)}
+                      className="px-3 py-1 rounded-full text-sm"
+                      style={{
+                        backgroundColor: aktiv ? "var(--ink)" : "var(--surface)",
+                        color: aktiv ? "var(--surface)" : "var(--ink-3)",
+                        border: `1px solid ${aktiv ? "var(--ink)" : "var(--border)"}`,
+                      }}
+                    >
+                      {s.etikett}
+                      <span className="ml-1.5 text-[11px]" style={{ opacity: 0.7 }}>
+                        {antall}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <span />
+            )}
             <LeggTilBokKnapp />
           </div>
           {bøker.length === 0 && (
@@ -288,8 +327,13 @@ export default function BibliiotekTabs({
               Ingen bøker ennå.
             </p>
           )}
+          {bøker.length > 0 && filtrertBøker.length === 0 && (
+            <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
+              Ingen bøker med denne statusen.
+            </p>
+          )}
           <div className="space-y-2">
-            {bøker.map((b) => (
+            {filtrertBøker.map((b) => (
               <Link
                 key={b.id}
                 href={`/bibliotek/${b.id}`}

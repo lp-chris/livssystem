@@ -104,6 +104,8 @@ export default async function OppgaverSide({
     domeneFraId,
     sortering
   );
+  // Desktop-tabellen viser alle filtrerte i én liste – sorter den også
+  const sorterte = sorterOppgaver(filtrerte, domeneFraId, sortering);
 
   function lagUrl(params: Record<string, string | undefined>) {
     const p = new URLSearchParams();
