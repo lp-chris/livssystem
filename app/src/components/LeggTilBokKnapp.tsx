@@ -25,6 +25,11 @@ const LESE_STATUS = [
   { verdi: "fullført", etikett: "Lest" },
 ];
 
+const FORMAT = [
+  { verdi: "bok", etikett: "📖 Leser" },
+  { verdi: "lydbok", etikett: "🎧 Lytter" },
+];
+
 export default function LeggTilBokKnapp() {
   const [åpen, setÅpen] = useState(false);
   const [søk, setSøk] = useState("");
@@ -38,6 +43,7 @@ export default function LeggTilBokKnapp() {
   const [behandlerBilde, setBehandlerBilde] = useState(false);
   const [valgt, setValgt] = useState<ValgtBok | null>(null);
   const [leseStatus, setLeseStatus] = useState("vil_lese");
+  const [format, setFormat] = useState("bok");
   const [lagrer, setLagrer] = useState(false);
   const søkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
@@ -53,6 +59,7 @@ export default function LeggTilBokKnapp() {
       setManuellOmslag(null);
       setValgt(null);
       setLeseStatus("vil_lese");
+      setFormat("bok");
     }
   }, [åpen]);
 
@@ -135,6 +142,7 @@ export default function LeggTilBokKnapp() {
         isbn: manuell ? null : valgt?.isbn || null,
         omslagUrl: manuell ? manuellOmslag : valgt?.omslagUrl || null,
         leseStatus,
+        format,
       }),
     });
     setLagrer(false);
@@ -375,6 +383,36 @@ export default function LeggTilBokKnapp() {
               ? "Fant ingen treff — legg inn manuelt →"
               : "Finner du ikke boken? Legg inn manuelt →"}
           </button>
+        )}
+
+        {/* Format */}
+        {visStatus && (
+          <div className="mb-4">
+            <p
+              className="text-[11px] font-bold uppercase mb-2"
+              style={{ letterSpacing: "0.1em", color: "var(--muted)" }}
+            >
+              Format
+            </p>
+            <div className="flex gap-2">
+              {FORMAT.map((f) => (
+                <button
+                  key={f.verdi}
+                  onClick={() => setFormat(f.verdi)}
+                  className="flex-1 py-2.5 rounded-[12px] text-sm font-medium"
+                  style={{
+                    backgroundColor:
+                      format === f.verdi ? "var(--ink)" : "var(--card)",
+                    color:
+                      format === f.verdi ? "var(--surface)" : "var(--muted)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  {f.etikett}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Lese-status */}

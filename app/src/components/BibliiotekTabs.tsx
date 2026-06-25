@@ -14,6 +14,7 @@ type LibraryItem = {
   kilde: string | null;
   forfatter: string | null;
   leseStatus: string | null;
+  format: string | null;
   omslagUrl: string | null;
   rating: number | null;
   favoritt: boolean;
@@ -320,12 +321,13 @@ export default function BibliiotekTabs({
                   >
                     {b.tittel}
                   </div>
-                  {b.forfatter && (
+                  {(b.forfatter || b.format === "lydbok") && (
                     <div
-                      className="text-xs mt-0.5"
+                      className="text-xs mt-0.5 flex items-center gap-1"
                       style={{ color: "var(--muted)" }}
                     >
-                      {b.forfatter}
+                      {b.format === "lydbok" && <span title="Lydbok">🎧</span>}
+                      {b.forfatter && <span>{b.forfatter}</span>}
                     </div>
                   )}
                   {b.rating != null && b.rating > 0 && (

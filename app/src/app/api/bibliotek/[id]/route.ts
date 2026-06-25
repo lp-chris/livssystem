@@ -53,6 +53,7 @@ export async function PATCH(
   if (body.innhold !== undefined) oppdatering.innhold = body.innhold ?? null;
   if (body.favoritt !== undefined) oppdatering.favoritt = body.favoritt;
   if (body.leseStatus !== undefined) oppdatering.leseStatus = body.leseStatus;
+  if (body.format !== undefined) oppdatering.format = body.format ?? null;
   if (body.rating !== undefined) oppdatering.rating = body.rating;
   if (body.sammendrag !== undefined) oppdatering.sammendrag = body.sammendrag ?? null;
   if (body.flaggetForReview !== undefined) oppdatering.flaggetForReview = body.flaggetForReview;

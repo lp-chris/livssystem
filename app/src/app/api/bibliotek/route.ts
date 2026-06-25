@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       omslagUrl: body.omslagUrl ?? null,
       isbn: body.isbn ?? null,
       leseStatus: body.leseStatus ?? null,
+      format: body.format ?? null,
       rating: body.rating ?? null,
       sammendrag: body.sammendrag ?? null,
       domainId: body.domainId ?? null,

@@ -9,6 +9,7 @@ import FavorittKnapp from "@/components/FavorittKnapp";
 import LeggTilTanke from "@/components/LeggTilTanke";
 import LeseStatusVelger from "@/components/LeseStatusVelger";
 import BokRating from "@/components/BokRating";
+import BokFormatVelger from "@/components/BokFormatVelger";
 import BokSammendrag from "@/components/BokSammendrag";
 import BokTanker from "@/components/BokTanker";
 import SlettBibliotekElement from "@/components/SlettBibliotekElement";
@@ -84,6 +85,7 @@ export default async function BibliotekDetaljSide({
                 )}
               </div>
             </div>
+            <BokFormatVelger id={item.id} format={item.format} />
             <LeseStatusVelger id={item.id} status={item.leseStatus ?? "vil_lese"} />
             <BokRating id={item.id} rating={item.rating} />
             <BokSammendrag
