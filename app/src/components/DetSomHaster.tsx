@@ -19,9 +19,14 @@ function forfallEtikett(forfall: string | null): string {
 
 export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }) {
   const [oppgaver, setOppgaver] = useState(init);
+  const [ferdige, setFerdige] = useState<Set<number>>(new Set());
 
   async function markerFerdig(id: number) {
-    setOppgaver((prev) => prev.filter((o) => o.id !== id));
+    // Vis avhuking, fade ut, så fjern raden
+    setFerdige((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      setOppgaver((prev) => prev.filter((o) => o.id !== id));
+    }, 450);
     await fetch(`/api/oppgaver/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -51,6 +56,8 @@ export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }
             style={{
               borderTop: i > 0 ? "1px solid var(--border)" : "none",
               borderLeft: "3px solid #C28568",
+              opacity: ferdige.has(o.id) ? 0 : 1,
+              transition: "opacity 0.35s ease",
             }}
           >
             <button
@@ -60,13 +67,22 @@ export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }
               style={{ minWidth: 44, minHeight: 44 }}
             >
               <div
+                className="flex items-center justify-center"
                 style={{
                   width: 21,
                   height: 21,
                   borderRadius: "50%",
-                  border: "1.8px solid #D8D3C8",
+                  border: ferdige.has(o.id)
+                    ? "1.8px solid #C28568"
+                    : "1.8px solid #D8D3C8",
+                  backgroundColor: ferdige.has(o.id) ? "#C28568" : "transparent",
+                  transition: "background-color 0.15s ease, border-color 0.15s ease",
                 }}
-              />
+              >
+                {ferdige.has(o.id) && (
+                  <span style={{ color: "#fff", fontSize: 12, lineHeight: 1 }}>✓</span>
+                )}
+              </div>
             </button>
             <div className="flex-1 min-w-0 pr-3">
               <p className="text-sm font-medium" style={{ color: "var(--ink)" }}>
