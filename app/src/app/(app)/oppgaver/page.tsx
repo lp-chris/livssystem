@@ -107,10 +107,13 @@ export default async function OppgaverSide({
   // Desktop-tabellen viser alle filtrerte i én liste – sorter den også
   const sorterte = sorterOppgaver(filtrerte, domeneFraId, sortering);
 
-  function lagUrl(params: Record<string, string | undefined>) {
+  function lagUrl(params: { domene?: string; sorter?: string }) {
     const p = new URLSearchParams();
-    if (valgtDomeneNavn && params.domene !== "") p.set("domene", params.domene ?? valgtDomeneNavn);
-    if (params.sorter ?? sorter) p.set("sorter", params.sorter ?? sorter ?? "");
+    // Bruk ny verdi hvis den er oppgitt (tom streng = fjern), ellers behold gjeldende
+    const nyDomene = params.domene !== undefined ? params.domene : valgtDomeneNavn;
+    if (nyDomene) p.set("domene", nyDomene);
+    const nySorter = params.sorter !== undefined ? params.sorter : sorter;
+    if (nySorter) p.set("sorter", nySorter);
     const str = p.toString();
     return `/oppgaver${str ? `?${str}` : ""}`;
   }
