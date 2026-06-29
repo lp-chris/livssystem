@@ -176,6 +176,39 @@ export const captures = pgTable("captures", {
   opprettet: timestamp("opprettet").notNull().defaultNow(),
 });
 
+// --- Journal (5 Minute Journal-stil) ---
+// Egen modell, speiler bevisst reviews/review_answers: én rad pr dag,
+// svar pr spørsmål med stabil question_key, autosave fortløpende.
+// Den gamle fritekst-journalen (library_items type=journal) røres ikke.
+
+export const journalEntries = pgTable("journal_entries", {
+  id: serial("id").primaryKey(),
+  dato: date("dato").notNull().unique(), // én entry pr dag
+  sted: text("sted"),
+  opprettet: timestamp("opprettet").notNull().defaultNow(),
+  oppdatert: timestamp("oppdatert").notNull().defaultNow(),
+});
+
+export const journalAnswers = pgTable("journal_answers", {
+  id: serial("id").primaryKey(),
+  entryId: integer("entry_id")
+    .notNull()
+    .references(() => journalEntries.id, { onDelete: "cascade" }),
+  // morning.gratitude | morning.great_day | morning.affirmation | evening.went_well
+  questionKey: text("question_key").notNull(),
+  // gratitude lagres som én tekst med linjeskift mellom punktene
+  svar: text("svar"),
+});
+
+export const journalImages = pgTable("journal_images", {
+  id: serial("id").primaryKey(),
+  entryId: integer("entry_id")
+    .notNull()
+    .references(() => journalEntries.id, { onDelete: "cascade" }),
+  url: text("url").notNull(), // komprimert data-URL (samme mønster som bokomslag)
+  opprettet: timestamp("opprettet").notNull().defaultNow(),
+});
+
 // Logg over API-bruk (Anthropic m.fl.) for kostnadsoversikt.
 // Lagrer rå token-tall + modell; kroner regnes ut i visningslaget
 // fra en prisliste, så historikk ikke fryser feil pris/kurs.

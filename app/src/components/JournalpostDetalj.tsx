@@ -46,7 +46,7 @@ export default function JournalpostDetalj({ post: init }: { post: Post }) {
 
   async function slett() {
     await fetch(`/api/bibliotek/${post.id}`, { method: "DELETE" });
-    router.push("/journal");
+    router.push("/journal/arkiv");
     router.refresh();
   }
 
@@ -54,7 +54,7 @@ export default function JournalpostDetalj({ post: init }: { post: Post }) {
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto">
       <header className="flex items-center justify-between mb-6">
         <Link
-          href="/journal"
+          href="/journal/arkiv"
           className="min-w-[44px] min-h-[44px] flex items-center"
           style={{ color: "var(--muted)", fontSize: 18 }}
         >

@@ -1,8 +1,16 @@
 export const dynamic = "force-dynamic";
 
 import { db } from "@/db";
-import { tasks, routines, routineLogs, libraryItems } from "@/db/schema";
+import {
+  tasks,
+  routines,
+  routineLogs,
+  libraryItems,
+  journalEntries,
+  journalAnswers,
+} from "@/db/schema";
 import { eq, and, lte, isNotNull, sql } from "drizzle-orm";
+import { iDagOslo } from "@/lib/dato";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
 import Link from "next/link";
 import Topp3 from "@/components/Topp3";
@@ -58,6 +66,25 @@ export default async function IDag() {
     tidspunkt: r.tidspunkt,
     fullførtIdag: logger.some((l) => l.routineId === r.id && l.fullført),
   }));
+
+  // Dagens journal — har morgenrefleksjonen blitt startet?
+  const [journalEntry] = await db
+    .select()
+    .from(journalEntries)
+    .where(eq(journalEntries.dato, iDagOslo()));
+  let journalStartet = false;
+  if (journalEntry) {
+    const [gratitude] = await db
+      .select()
+      .from(journalAnswers)
+      .where(
+        and(
+          eq(journalAnswers.entryId, journalEntry.id),
+          eq(journalAnswers.questionKey, "morning.gratitude")
+        )
+      );
+    journalStartet = (gratitude?.svar ?? "").trim().length > 0;
+  }
 
   const resurfacingItem = tilfeldigItem[0] ?? null;
   const topp3Ids = new Set(topp3.map((o) => o.id));
@@ -119,6 +146,29 @@ export default async function IDag() {
         <div className="space-y-5">
           <DetSomHaster oppgaver={hasterFiltrert} />
           <KalenderIDag />
+          <Link
+            href="/journal"
+            className="flex items-center justify-between px-4 py-4 rounded-[18px]"
+            style={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div>
+              <p
+                className="text-[11px] font-semibold uppercase"
+                style={{ letterSpacing: "0.1em", color: "var(--muted)" }}
+              >
+                Dagens journal
+              </p>
+              <p className="text-sm mt-0.5" style={{ color: "var(--ink)" }}>
+                {journalStartet
+                  ? "Fortsett dagens notat"
+                  : "Skriv morgenrefleksjonen"}
+              </p>
+            </div>
+            <span style={{ color: "var(--muted)", fontSize: 18 }}>→</span>
+          </Link>
         </div>
       </div>
 
