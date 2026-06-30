@@ -17,7 +17,12 @@ function lagAuth() {
   if (!rå) {
     throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY mangler");
   }
-  const creds = JSON.parse(rå) as {
+  // Lagres base64-kodet for å unngå problemer med fnutter/linjeskift
+  // i env-variabler. Faller tilbake til rå JSON for bakoverkompatibilitet.
+  const json = rå.trim().startsWith("{")
+    ? rå
+    : Buffer.from(rå, "base64").toString("utf8");
+  const creds = JSON.parse(json) as {
     client_email: string;
     private_key: string;
   };
