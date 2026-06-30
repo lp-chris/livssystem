@@ -35,9 +35,8 @@ async function sjekkDatabase(): Promise<Integrasjonsstatus> {
 async function sjekkGoogleKalender(): Promise<Integrasjonsstatus> {
   const navn = "Google Calendar (lesing)";
   const manglerEnv = [
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_REFRESH_TOKEN",
+    "GOOGLE_SERVICE_ACCOUNT_KEY",
+    "GOOGLE_CALENDAR_ID",
   ].filter((n) => !harEnv(n));
 
   if (manglerEnv.length) {

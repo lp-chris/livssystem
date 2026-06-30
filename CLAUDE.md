@@ -151,6 +151,9 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 
 ## Siste endringer
 
+### 2026-06-30
+- **Google Calendar: byttet fra OAuth refresh-token til service account** — Kalenderen feilet med `invalid_grant` fordi refresh-tokenen var død (OAuth-appen sto i «Testing»-modus → refresh-tokens utløper etter 7 dager). Byttet til en service account (`livssystem-kalender@livssystem.iam.gserviceaccount.com`, fantes allerede) som aldri utløper. `lib/googleKalender.ts` bruker nå `google.auth.JWT` med to nye env-variabler: `GOOGLE_SERVICE_ACCOUNT_KEY` (hele JSON-nøkkelen som én streng) og `GOOGLE_CALENDAR_ID` (Google-konto-e-posten — service account har ingen `primary`-kalender, så vi peker eksplisitt på den delte kalenderen). Forutsetter at kalenderen er delt med service account-ens e-post (tilgang «Se alle detaljer i hendelser»). Oppdaterte env-sjekkene i `lib/integrasjonsstatus.ts` og `api/kalender/route.ts`. De gamle `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN` brukes ikke lenger av koden.
+
 ### 2026-06-29
 - **Journal-modul (5 Minute Journal-stil) — Del 1 av 2** — Ny daglig journal som egen datamodell ved siden av den gamle fritekst-journalen. Tre nye tabeller i `schema.ts`: `journal_entries` (én rad pr dag, unik `dato`, valgfritt `sted`), `journal_answers` (svar pr `question_key`: `morning.gratitude` / `morning.great_day` / `morning.affirmation` / `evening.went_well` — gratitude lagres som én tekst med linjeskift), `journal_images` (ett komprimert data-URL-bilde pr dag, samme mønster som bokomslag). Dyttet med `db:push`.
   - **Lazy entry + Oslo-dato:** dagens entry opprettes først når noe faktisk lagres (så dager man bare kikker innom forblir tomme og månedsoppslaget rent). Ny `lib/dato.ts` med `iDagOslo()` (Intl `Europe/Oslo`) — hjemskjermen brukte `toISOString()` (UTC) som hopper feil rundt midnatt; journalen bruker ekte lokal dato.
