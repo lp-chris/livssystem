@@ -126,6 +126,8 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 - **Treningslogg** — Logg trening per hest med dato, type og kommentar. Graf over treningsfrekvens. Kan bygges på bibliotek-strukturen.
 
 ### Journal og bibliotek
+- **Søk på tvers (bibliotek-UX del B)** — Utvid det eksisterende `/sok` + `/api/sok` til også å dekke journaloppføringer (`journal_entries`/`journal_answers`), ikke bare notater/sitater/bøker. Neste steg etter journal-navigasjon (del A, gjort 2026-07-01).
+- **Favoritt-filter i biblioteket (bibliotek-UX del C)** — Klient-side filter for å vise kun favoritt-merkede elementer. Ingen schema-endring; `favoritt` lastes allerede. Den lille poleringen til slutt.
 - **"Du skrev dette i går"** — Øverst på journalsiden: gårsdagens post som stille refleksjonspåminnelse.
 - **Bok-fremgang** — Logg sider eller prosent mens du leser. Fremgangsbar på bokkortene.
 
