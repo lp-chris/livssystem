@@ -158,6 +158,13 @@ export default function JournalDagen({
           </h1>
           <div className="flex gap-3 mt-1.5">
             <Link
+              href="/journal/alle"
+              className="text-sm"
+              style={{ color: "var(--muted)" }}
+            >
+              Alle
+            </Link>
+            <Link
               href={`/journal/maned/${maaned}`}
               className="text-sm"
               style={{ color: "var(--muted)" }}

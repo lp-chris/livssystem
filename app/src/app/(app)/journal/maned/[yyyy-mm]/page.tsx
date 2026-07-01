@@ -126,18 +126,14 @@ export default async function JournalManedSide({
           const bilde = entry ? entryTilBilde.get(entry.id) : undefined;
           const erIDag = datoStr === iDag;
 
-          return (
-            <div
-              key={datoStr}
-              className="relative rounded-[12px] overflow-hidden"
-              style={{
-                aspectRatio: "1 / 1",
-                backgroundColor: "var(--card)",
-                border: erIDag
-                  ? "2px solid var(--ink)"
-                  : "1px solid var(--border)",
-              }}
-            >
+          const celleStil = {
+            aspectRatio: "1 / 1" as const,
+            backgroundColor: "var(--card)",
+            border: erIDag ? "2px solid var(--ink)" : "1px solid var(--border)",
+          };
+
+          const innhold = (
+            <>
               {bilde ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -167,6 +163,29 @@ export default async function JournalManedSide({
                   {dag}
                 </span>
               )}
+            </>
+          );
+
+          if (entry) {
+            return (
+              <Link
+                key={datoStr}
+                href={`/journal/${datoStr}`}
+                className="relative rounded-[12px] overflow-hidden block transition-opacity active:opacity-70"
+                style={celleStil}
+              >
+                {innhold}
+              </Link>
+            );
+          }
+
+          return (
+            <div
+              key={datoStr}
+              className="relative rounded-[12px] overflow-hidden"
+              style={celleStil}
+            >
+              {innhold}
             </div>
           );
         })}

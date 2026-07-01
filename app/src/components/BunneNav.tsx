@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/oppgaver", label: "Oppgaver", ikon: "☑" },
   null, // gap for mic-knapp
   { href: "/prosjekter", label: "Prosjekter", ikon: "◫" },
+  { href: "/journal", label: "Journal", ikon: "✎" },
   { href: "/bibliotek", label: "Bibliotek", ikon: "❧" },
 ];
 
@@ -34,20 +35,18 @@ export default function BunneNav() {
         const aktiv =
           item.href === "/"
             ? pathname === "/"
-            : item.href === "/bibliotek"
-            ? pathname.startsWith("/bibliotek") || pathname.startsWith("/journal")
             : pathname.startsWith(item.href);
 
         return (
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-col items-center gap-0.5 min-w-[52px] min-h-[44px]"
+            className="flex flex-col items-center gap-0.5 min-w-[44px] min-h-[44px]"
             style={{ color: aktiv ? "var(--ink)" : "var(--muted)" }}
           >
             <span className="text-xl leading-none">{item.ikon}</span>
             <span
-              className="text-[10px] font-medium"
+              className="text-[10px] font-medium whitespace-nowrap"
               style={{ letterSpacing: "0.03em" }}
             >
               {item.label}

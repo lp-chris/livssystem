@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/oppgaver", label: "Oppgaver", ikon: "☑" },
   { href: "/prosjekter", label: "Prosjekter", ikon: "◫" },
   { href: "/rutiner", label: "Rutiner", ikon: "○" },
+  { href: "/journal", label: "Journal", ikon: "✎" },
   { href: "/bibliotek", label: "Bibliotek", ikon: "❧" },
 ];
 
@@ -45,9 +46,6 @@ export default function SidebarNav() {
           const aktiv =
             item.href === "/"
               ? pathname === "/"
-              : item.href === "/bibliotek"
-              ? pathname.startsWith("/bibliotek") ||
-                pathname.startsWith("/journal")
               : pathname.startsWith(item.href);
 
           return (

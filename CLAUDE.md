@@ -151,6 +151,14 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 
 ## Siste endringer
 
+### 2026-07-01
+- **Journal: fast plass i navigasjonen + tilbakeblikk (bibliotek-UX del A)** — Journalen var kun nåbar via et kort i biblioteket og en påminnelse på hjem, og den nye daglige journalen kunne ikke leses tilbake (månedscellene var `<div>`, ikke lenker; `/journal` viser alltid bare i dag). Fire endringer:
+  - **Egen fane i hovednavigasjonen** — Journal lagt til i både `BunneNav.tsx` (mobil, nå 5 punkter + mic — `min-w` senket 52→44px, `whitespace-nowrap` på label så det får plass) og `SidebarNav.tsx` (desktop, mellom Rutiner og Bibliotek). Aktiv-logikken forenklet: `/journal` var tidligere behandlet som en del av `/bibliotek`s aktiv-tilstand — nå eier hver sin path via ren `startsWith`.
+  - **Lese-visning for én dag** — Ny `/journal/[dato]/page.tsx` (server, read-only). Viser kun seksjoner som har innhold (takknemlighet/god dag/affirmasjon/bilde/kveld), i tråd med at en «tom» dag skal se rolig ut. `Rediger`-lenke vises kun når `dato === iDagOslo()` (peker til `/journal`). 404 ved ugyldig datoformat eller manglende entry. Statiske søsken (`alle`/`maned`/`arkiv`) tar prioritet over `[dato]`.
+  - **«Alle oppføringer»-liste** — Ny `/journal/alle/page.tsx` (server), kronologisk nyeste først, hver rad = dato + utdrag (første takknemlighetslinje, ellers annet svar) + bildeminiatyr, lenker til `/journal/[dato]`.
+  - **Klikkbare månedsceller** — `/journal/maned/[yyyy-mm]` wrapper nå celler med en entry i en `<Link>` til `/journal/[dato]` (celler uten entry forblir `<div>`). `JournalDagen`-headeren fikk en `Alle`-lenke ved siden av `Måned`/`Arkiv`.
+  - Journal-kortet i biblioteket og hjem-påminnelsen er urørt (beholdt som ekstra innganger, per ønske). Gjenstår (del B): utvide `/sok` til å dekke journal, deretter favoritt-filter i biblioteket.
+
 ### 2026-06-30
 - **Google Calendar: byttet fra OAuth refresh-token til service account** — Kalenderen feilet med `invalid_grant` fordi refresh-tokenen var død (OAuth-appen sto i «Testing»-modus → refresh-tokens utløper etter 7 dager). Byttet til en service account (`livssystem-kalender@livssystem.iam.gserviceaccount.com`, fantes allerede) som aldri utløper. `lib/googleKalender.ts` bruker nå `google.auth.JWT` med to nye env-variabler: `GOOGLE_SERVICE_ACCOUNT_KEY` (hele JSON-nøkkelen som én streng) og `GOOGLE_CALENDAR_ID` (Google-konto-e-posten — service account har ingen `primary`-kalender, så vi peker eksplisitt på den delte kalenderen). Forutsetter at kalenderen er delt med service account-ens e-post (tilgang «Se alle detaljer i hendelser»). Oppdaterte env-sjekkene i `lib/integrasjonsstatus.ts` og `api/kalender/route.ts`. De gamle `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN` brukes ikke lenger av koden.
 
