@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, domains } from "@/db/schema";
 import { eq, and, lte, isNotNull } from "drizzle-orm";
+import { iDagOslo } from "@/lib/dato";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const filter = searchParams.get("filter");
-  const iDagStr = new Date().toISOString().split("T")[0];
+  const iDagStr = iDagOslo();
 
   let query = db
     .select()

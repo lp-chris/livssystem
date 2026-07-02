@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { db } from "@/db";
 import { journalEntries, journalAnswers, journalImages } from "@/db/schema";
 import { desc, inArray } from "drizzle-orm";
+import { iDagOslo } from "@/lib/dato";
 import Link from "next/link";
 
 function formaterDato(dato: string): string {
@@ -64,7 +65,7 @@ export default async function AlleJournalSide() {
             ← Dagens journal
           </Link>
           <Link
-            href={`/journal/maned/${new Date().toISOString().slice(0, 7)}`}
+            href={`/journal/maned/${iDagOslo().slice(0, 7)}`}
             className="text-sm min-h-[44px] inline-flex items-center"
             style={{ color: "var(--muted)" }}
           >

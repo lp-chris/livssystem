@@ -3,25 +3,22 @@ export const dynamic = "force-dynamic";
 import { db } from "@/db";
 import { routines, routineLogs } from "@/db/schema";
 import { gte } from "drizzle-orm";
+import { datoOslo, iDagOslo } from "@/lib/dato";
 import RutineKort from "@/components/RutineKort";
 import NyRutineKnapp from "@/components/NyRutineKnapp";
-
-function datoStreng(d: Date) {
-  return d.toISOString().split("T")[0];
-}
 
 function beregnStreak(logger: { dato: string; fullført: boolean }[]): number {
   const fullførteDatoer = new Set(
     logger.filter((l) => l.fullført).map((l) => l.dato)
   );
   const iDag = new Date();
-  const iDagStr = datoStreng(iDag);
+  const iDagStr = iDagOslo();
   let streak = 0;
   const startOffset = fullførteDatoer.has(iDagStr) ? 0 : 1;
   for (let i = startOffset; i < 365; i++) {
     const dato = new Date(iDag);
     dato.setDate(dato.getDate() - i);
-    if (fullførteDatoer.has(datoStreng(dato))) {
+    if (fullførteDatoer.has(datoOslo(dato))) {
       streak++;
     } else {
       break;
@@ -38,7 +35,7 @@ function siste14Dager(logger: { dato: string; fullført: boolean }[]) {
   return Array.from({ length: 14 }, (_, i) => {
     const dato = new Date(iDag);
     dato.setDate(dato.getDate() - (13 - i));
-    const datoStr = datoStreng(dato);
+    const datoStr = datoOslo(dato);
     return { dato: datoStr, fullført: fullførteDatoer.has(datoStr) };
   });
 }
@@ -63,9 +60,9 @@ export default async function RutinerSide() {
   const alleLogger = await db
     .select()
     .from(routineLogs)
-    .where(gte(routineLogs.dato, datoStreng(cutoff)));
+    .where(gte(routineLogs.dato, datoOslo(cutoff)));
 
-  const iDagStr = datoStreng(new Date());
+  const iDagStr = iDagOslo();
 
   const rutiner = alleRutiner.map((r) => {
     const logger = alleLogger.filter((l) => l.routineId === r.id);

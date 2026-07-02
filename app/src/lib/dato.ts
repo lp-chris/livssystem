@@ -1,6 +1,6 @@
 // Lokal dato i Europe/Oslo som "YYYY-MM-DD".
-// Hjemskjermen bruker toISOString() (UTC), som hopper feil rundt midnatt.
-// Journalen (og senere review-perioder) trenger ekte lokal dato.
+// Serveren (Railway) kjører i UTC — toISOString() gir feil dato
+// mellom midnatt og kl. 01/02 norsk tid. Bruk alltid disse hjelperne.
 export function iDagOslo(): string {
   return datoOslo(new Date());
 }
@@ -13,4 +13,28 @@ export function datoOslo(d: Date): string {
     month: "2-digit",
     day: "2-digit",
   }).format(d);
+}
+
+// Gjeldende UTC-offset for Oslo, f.eks. "+02:00" (sommertid) eller "+01:00".
+// Brukes til RFC3339-tidsstempler (Google Calendar).
+export function osloOffset(d: Date = new Date()): string {
+  const deler = new Intl.DateTimeFormat("en", {
+    timeZone: "Europe/Oslo",
+    timeZoneName: "longOffset",
+  }).formatToParts(d);
+  const navn = deler.find((p) => p.type === "timeZoneName")?.value ?? "GMT+01:00";
+  const offset = navn.replace("GMT", "");
+  return offset || "+00:00";
+}
+
+// Klokketime (0–23) i Oslo akkurat nå. Serveren kjører i UTC,
+// så new Date().getHours() gir feil time på Railway.
+export function timeOslo(): number {
+  return Number(
+    new Intl.DateTimeFormat("en", {
+      timeZone: "Europe/Oslo",
+      hour: "numeric",
+      hourCycle: "h23",
+    }).format(new Date())
+  );
 }

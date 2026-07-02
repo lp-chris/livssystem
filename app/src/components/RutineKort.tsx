@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { iDagOslo } from "@/lib/dato";
 
 type Dag = { dato: string; fullført: boolean };
 
@@ -26,7 +27,7 @@ export default function RutineKort({ rutine: initial }: { rutine: Rutine }) {
       });
       const data = await svar.json();
       const nyFullførtIdag = data.fullført as boolean;
-      const iDagStr = new Date().toISOString().split("T")[0];
+      const iDagStr = iDagOslo();
 
       setRutine((r) => ({
         ...r,

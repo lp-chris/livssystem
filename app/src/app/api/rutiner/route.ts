@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { routines, routineLogs, domains } from "@/db/schema";
 import { eq, and, gte, desc } from "drizzle-orm";
-
-function datoStreng(d: Date) {
-  return d.toISOString().split("T")[0];
-}
+import { datoOslo, iDagOslo } from "@/lib/dato";
 
 function beregnStreak(logger: { dato: string; fullført: boolean }[]): number {
   const fullførteDatoer = new Set(
@@ -16,13 +13,13 @@ function beregnStreak(logger: { dato: string; fullført: boolean }[]): number {
   const iDag = new Date();
 
   // Sjekk om i dag er fullført
-  const iDagStr = datoStreng(iDag);
+  const iDagStr = iDagOslo();
   let sjekkFra = fullførteDatoer.has(iDagStr) ? 0 : 1;
 
   for (let i = sjekkFra; i < 365; i++) {
     const dato = new Date(iDag);
     dato.setDate(dato.getDate() - i);
-    const datoStr = datoStreng(dato);
+    const datoStr = datoOslo(dato);
     if (fullførteDatoer.has(datoStr)) {
       streak++;
     } else {
@@ -41,7 +38,7 @@ function siste14Dager(logger: { dato: string; fullført: boolean }[]) {
   for (let i = 13; i >= 0; i--) {
     const dato = new Date(iDag);
     dato.setDate(dato.getDate() - i);
-    const datoStr = datoStreng(dato);
+    const datoStr = datoOslo(dato);
     dager.push({ dato: datoStr, fullført: fullførteDatoer.has(datoStr) });
   }
   return dager;
@@ -59,9 +56,9 @@ export async function GET() {
   const alleLogger = await db
     .select()
     .from(routineLogs)
-    .where(gte(routineLogs.dato, datoStreng(cutoff)));
+    .where(gte(routineLogs.dato, datoOslo(cutoff)));
 
-  const iDagStr = datoStreng(new Date());
+  const iDagStr = iDagOslo();
 
   const resultat = alleRutiner.map((r) => {
     const logger = alleLogger.filter((l) => l.routineId === r.id);
@@ -96,7 +93,7 @@ export async function POST(req: NextRequest) {
       beskrivelse: body.beskrivelse ?? null,
       tidspunkt: body.tidspunkt ?? "når_som_helst",
       type: body.type ?? "daglig",
-      startDate: datoStreng(new Date()),
+      startDate: iDagOslo(),
       sendVarsel: false,
     })
     .returning();

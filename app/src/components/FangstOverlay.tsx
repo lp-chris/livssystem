@@ -17,6 +17,7 @@ const RUTETYPE_ETIKETT: Record<string, string> = {
   notat: "Notat",
   sitat: "Sitat",
   bok: "Bok",
+  journal: "Journal",
 };
 
 export default function FangstOverlay() {

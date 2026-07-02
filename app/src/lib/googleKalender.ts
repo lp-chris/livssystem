@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { iDagOslo, osloOffset } from "@/lib/dato";
 
 export type KalenderHendelse = {
   id: string;
@@ -44,16 +45,15 @@ export async function hentDagensHendelser(): Promise<KalenderHendelse[]> {
     throw new Error("GOOGLE_CALENDAR_ID mangler");
   }
 
-  const nå = new Date();
-  const startAvDag = new Date(nå);
-  startAvDag.setHours(0, 0, 0, 0);
-  const sluttAvDag = new Date(nå);
-  sluttAvDag.setHours(23, 59, 59, 999);
+  // Dagens vindu i norsk tid — serveren kjører i UTC, så vi må
+  // bygge tidsstemplene med eksplisitt Oslo-offset.
+  const dag = iDagOslo();
+  const offset = osloOffset();
 
   const svar = await kalender.events.list({
     calendarId,
-    timeMin: startAvDag.toISOString(),
-    timeMax: sluttAvDag.toISOString(),
+    timeMin: `${dag}T00:00:00${offset}`,
+    timeMax: `${dag}T23:59:59${offset}`,
     singleEvents: true,
     orderBy: "startTime",
     maxResults: 10,

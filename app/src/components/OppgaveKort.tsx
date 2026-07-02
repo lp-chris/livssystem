@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { iDagOslo } from "@/lib/dato";
 
 type Oppgave = {
   id: number;
@@ -15,7 +16,7 @@ type Oppgave = {
 
 function forfallFarge(forfall: string | null): string {
   if (!forfall) return "var(--muted)";
-  const iDag = new Date().toISOString().split("T")[0];
+  const iDag = iDagOslo();
   if (forfall < iDag) return "#C28568";
   if (forfall === iDag) return "var(--hest)";
   return "var(--muted)";
@@ -23,7 +24,7 @@ function forfallFarge(forfall: string | null): string {
 
 function forfallTekst(forfall: string | null): string {
   if (!forfall) return "";
-  const iDag = new Date().toISOString().split("T")[0];
+  const iDag = iDagOslo();
   if (forfall === iDag) return "i dag";
   if (forfall < iDag) return `${forfall} ⚠`;
   return forfall;

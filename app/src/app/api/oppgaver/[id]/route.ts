@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { datoOslo } from "@/lib/dato";
 
 function nesteForfall(regel: string, nåværendeForfall: string | null): string {
   const base = nåværendeForfall ? new Date(nåværendeForfall) : new Date();
@@ -15,7 +16,7 @@ function nesteForfall(regel: string, nåværendeForfall: string | null): string 
     const dager = parseInt(regel.replace("hver-", "").replace("-dager", ""));
     if (!isNaN(dager)) base.setDate(base.getDate() + dager);
   }
-  return base.toISOString().split("T")[0];
+  return datoOslo(base);
 }
 
 export async function GET(

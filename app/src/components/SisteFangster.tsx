@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Fangst = {
+export type Fangst = {
   id: number;
   råTekst: string;
   status: string;
@@ -12,7 +12,6 @@ type Fangst = {
     domene?: string | null;
   } | null;
   rutetTil?: { type: string; id: number } | null;
-  opprettet: string;
 };
 
 const typeEtikett: Record<string, string> = {
@@ -26,17 +25,15 @@ const typeEtikett: Record<string, string> = {
 
 const DOMENER = ["Meg", "Oss", "Stall", "Hest"];
 
-export default function SisteFangster({ oppdater }: { oppdater?: number }) {
-  const [fangster, setFangster] = useState<Fangst[]>([]);
+export default function SisteFangster({ init }: { init: Fangst[] }) {
+  const [fangster, setFangster] = useState<Fangst[]>(init);
   const [åpenId, setÅpenId] = useState<number | null>(null);
   const [lagrerId, setLagrerId] = useState<number | null>(null);
 
+  // Hold lista i takt med serveren (router.refresh() etter ny fangst)
   useEffect(() => {
-    fetch("/api/capture/siste")
-      .then((r) => r.json())
-      .then((data) => setFangster(data.fangster ?? []))
-      .catch(() => {});
-  }, [oppdater]);
+    setFangster(init);
+  }, [init]);
 
   async function flytt(f: Fangst, domene: string | null) {
     setLagrerId(f.id);

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { captures, tasks, routines, libraryItems, domains } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { loggApiBruk } from "@/lib/apiBruk";
+import { iDagOslo } from "@/lib/dato";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -51,10 +52,16 @@ Tags-regler (kun for notat, sitat, bok):
 const MODELL = "claude-haiku-4-5";
 
 async function rutMedAI(tekst: string) {
+  // Modellen må vite dagens dato for å regne ut "i morgen", "på fredag" osv.
+  const ukedag = new Intl.DateTimeFormat("nb-NO", {
+    timeZone: "Europe/Oslo",
+    weekday: "long",
+  }).format(new Date());
+
   const response = await client.messages.create({
     model: MODELL,
     max_tokens: 512,
-    system: RUTING_PROMPT,
+    system: `${RUTING_PROMPT}\n\nDagens dato: ${ukedag} ${iDagOslo()} (Europe/Oslo). Bruk denne til å regne ut relative datoer som "i morgen", "på fredag" og "neste uke".`,
     messages: [{ role: "user", content: tekst }],
   });
 
@@ -119,7 +126,7 @@ async function lagreRutet(tolket: Record<string, unknown>) {
               | "kveld"
               | "når_som_helst") ?? "når_som_helst",
           type: "daglig",
-          startDate: new Date().toISOString().split("T")[0],
+          startDate: iDagOslo(),
           sendVarsel: false,
         })
         .returning();

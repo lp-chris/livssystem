@@ -8,9 +8,10 @@ import {
   libraryItems,
   journalEntries,
   journalAnswers,
+  captures,
 } from "@/db/schema";
-import { eq, and, lte, isNotNull, sql } from "drizzle-orm";
-import { iDagOslo } from "@/lib/dato";
+import { eq, and, lte, isNotNull, sql, desc } from "drizzle-orm";
+import { iDagOslo, timeOslo } from "@/lib/dato";
 import LoggUtKnapp from "@/components/LoggUtKnapp";
 import Link from "next/link";
 import Topp3 from "@/components/Topp3";
@@ -18,22 +19,19 @@ import DetSomHaster from "@/components/DetSomHaster";
 import DagensRutiner from "@/components/DagensRutiner";
 import Resurfacing from "@/components/Resurfacing";
 import KalenderIDag from "@/components/KalenderIDag";
-
-function datoStreng(d: Date) {
-  return d.toISOString().split("T")[0];
-}
+import SisteFangster, { type Fangst } from "@/components/SisteFangster";
 
 function hilsen(): string {
-  const time = new Date().getHours();
+  const time = timeOslo();
   if (time < 12) return "God morgen";
   if (time < 17) return "God ettermiddag";
   return "God kveld";
 }
 
 export default async function IDag() {
-  const iDagStr = datoStreng(new Date());
+  const iDagStr = iDagOslo();
 
-  const [topp3, haster, alleRutiner, logger, tilfeldigItem] = await Promise.all([
+  const [topp3, haster, alleRutiner, logger, tilfeldigItem, sisteFangster] = await Promise.all([
     db
       .select()
       .from(tasks)
@@ -58,7 +56,17 @@ export default async function IDag() {
     db.select().from(routineLogs).where(eq(routineLogs.dato, iDagStr)),
 
     db.select().from(libraryItems).orderBy(sql`RANDOM()`).limit(1),
+
+    db.select().from(captures).orderBy(desc(captures.opprettet)).limit(5),
   ]);
+
+  const fangster: Fangst[] = sisteFangster.map((c) => ({
+    id: c.id,
+    råTekst: c.råTekst,
+    status: c.status,
+    tolketJson: c.tolketJson as Fangst["tolketJson"],
+    rutetTil: c.rutetTil as Fangst["rutetTil"],
+  }));
 
   const dagensRutiner = alleRutiner.map((r) => ({
     id: r.id,
@@ -91,6 +99,7 @@ export default async function IDag() {
   const hasterFiltrert = haster.filter((o) => !topp3Ids.has(o.id));
 
   const dagString = new Date().toLocaleDateString("nb-NO", {
+    timeZone: "Europe/Oslo",
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -175,6 +184,11 @@ export default async function IDag() {
       {/* Resurfacing — full bredde under */}
       <div className="mt-6">
         <Resurfacing item={resurfacingItem} />
+      </div>
+
+      {/* Nylig fanget — sikkerhetsnett for AI-rutingen */}
+      <div className="mt-6">
+        <SisteFangster init={fangster} />
       </div>
     </main>
   );

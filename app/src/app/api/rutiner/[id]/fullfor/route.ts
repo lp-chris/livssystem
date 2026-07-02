@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { routineLogs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-
-function datoStreng(d: Date) {
-  return d.toISOString().split("T")[0];
-}
+import { iDagOslo } from "@/lib/dato";
 
 export async function POST(
   req: NextRequest,
@@ -17,7 +14,7 @@ export async function POST(
     return NextResponse.json({ feil: "Ugyldig id" }, { status: 400 });
   }
 
-  const iDagStr = datoStreng(new Date());
+  const iDagStr = iDagOslo();
 
   const eksisterende = await db
     .select()
