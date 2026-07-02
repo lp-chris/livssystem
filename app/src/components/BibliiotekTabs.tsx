@@ -42,6 +42,7 @@ export default function BibliiotekTabs({
   const [aktivTag, setAktivTag] = useState<string | null>(null);
   const [aktivDomene, setAktivDomene] = useState<number | null>(null);
   const [aktivBokStatus, setAktivBokStatus] = useState<string | null>(null);
+  const [kunFavoritter, setKunFavoritter] = useState(false);
 
   const notater = items.filter((i) => i.type === "notat");
   const sitater = items.filter((i) => i.type === "sitat");
@@ -70,18 +71,47 @@ export default function BibliiotekTabs({
   const filtrertNotater = notater.filter((n) => {
     if (aktivTag && !(n.tags ?? []).includes(aktivTag)) return false;
     if (aktivDomene !== null && n.domainId !== aktivDomene) return false;
+    if (kunFavoritter && !n.favoritt) return false;
     return true;
   });
 
-  const filtrertBøker = aktivBokStatus
-    ? bøker.filter((b) => (b.leseStatus ?? "vil_lese") === aktivBokStatus)
-    : bøker;
+  const filtrertSitater = kunFavoritter
+    ? sitater.filter((s) => s.favoritt)
+    : sitater;
+
+  const filtrertBøker = bøker.filter((b) => {
+    if (aktivBokStatus && (b.leseStatus ?? "vil_lese") !== aktivBokStatus)
+      return false;
+    if (kunFavoritter && !b.favoritt) return false;
+    return true;
+  });
+
+  // Favoritt-pillen vises kun når fanen faktisk har favoritter å filtrere på
+  const harFavoritter = aktivItems.some((i) => i.favoritt);
 
   function byttFane(fane: Fane) {
     setAktivFane(fane);
     setAktivTag(null);
     setAktivDomene(null);
     setAktivBokStatus(null);
+    setKunFavoritter(false);
+  }
+
+  function FavorittPille() {
+    if (!harFavoritter) return null;
+    return (
+      <button
+        onClick={() => setKunFavoritter(!kunFavoritter)}
+        className="px-3 py-1 rounded-full text-sm"
+        style={{
+          backgroundColor: kunFavoritter ? "var(--ink)" : "var(--surface)",
+          color: kunFavoritter ? "var(--surface)" : "var(--ink-3)",
+          border: `1px solid ${kunFavoritter ? "var(--ink)" : "var(--border)"}`,
+        }}
+      >
+        ★ Favoritter
+      </button>
+    );
   }
 
   return (
@@ -125,8 +155,11 @@ export default function BibliiotekTabs({
       {aktivFane === "notater" && (
         <div>
           {/* Filter */}
-          {(alleTags.length > 0 || domener.some((d) => notater.some((n) => n.domainId === d.id))) && (
+          {(alleTags.length > 0 ||
+            harFavoritter ||
+            domener.some((d) => notater.some((n) => n.domainId === d.id))) && (
             <div className="flex flex-wrap gap-2 mb-4">
+              <FavorittPille />
               {domener
                 .filter((d) => notater.some((n) => n.domainId === d.id))
                 .map((d) => (
@@ -250,13 +283,23 @@ export default function BibliiotekTabs({
       {/* Sitater */}
       {aktivFane === "sitater" && (
         <div>
+          {harFavoritter && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <FavorittPille />
+            </div>
+          )}
           {sitater.length === 0 && (
             <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
               Ingen sitater ennå.
             </p>
           )}
+          {sitater.length > 0 && filtrertSitater.length === 0 && (
+            <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
+              Ingen favoritt-sitater.
+            </p>
+          )}
           <div className="space-y-2">
-            {sitater.map((s) => (
+            {filtrertSitater.map((s) => (
               <Link
                 key={s.id}
                 href={`/bibliotek/${s.id}`}
@@ -316,6 +359,7 @@ export default function BibliiotekTabs({
                     </button>
                   );
                 })}
+                <FavorittPille />
               </div>
             ) : (
               <span />
@@ -329,7 +373,7 @@ export default function BibliiotekTabs({
           )}
           {bøker.length > 0 && filtrertBøker.length === 0 && (
             <p className="text-sm py-4" style={{ color: "var(--muted)" }}>
-              Ingen bøker med denne statusen.
+              Ingen bøker matcher filteret.
             </p>
           )}
           <div className="space-y-2">
