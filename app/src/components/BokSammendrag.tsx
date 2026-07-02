@@ -63,7 +63,7 @@ export default function BokSammendrag({
           onClick={generer}
           disabled={laster}
           className="w-full rounded-[16px] py-3 text-sm font-medium transition-opacity disabled:opacity-40 min-h-[44px]"
-          style={{ backgroundColor: "var(--ink)", color: "white" }}
+          style={{ backgroundColor: "var(--ink)", color: "var(--surface)" }}
         >
           {laster ? "Lager sammendrag…" : "✨ Lag AI-sammendrag"}
         </button>

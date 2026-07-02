@@ -56,7 +56,7 @@ export default function KalenderIDag() {
 
       <div
         className="rounded-[22px] overflow-hidden"
-        style={{ backgroundColor: "#FAF9F5", border: "1px solid var(--border)" }}
+        style={{ backgroundColor: "var(--kort-lys)", border: "1px solid var(--border)" }}
       >
         {hendelser.map((h, i) => (
           <div
@@ -72,7 +72,7 @@ export default function KalenderIDag() {
             </div>
             <div
               className="flex-shrink-0 rounded-full"
-              style={{ width: 3, height: 26, backgroundColor: "#DAD5C9" }}
+              style={{ width: 3, height: 26, backgroundColor: "var(--sirkel)" }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm" style={{ color: "var(--ink)" }}>

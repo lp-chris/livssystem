@@ -163,7 +163,7 @@ export default function FangstOverlay() {
           width: 66,
           height: 66,
           backgroundColor: "var(--ink)",
-          color: "white",
+          color: "var(--surface)",
           fontSize: 28,
         }}
       >

@@ -63,8 +63,8 @@ export default function DagensRutiner({ rutiner: init }: { rutiner: RutinePrevie
                   width: 22,
                   height: 22,
                   backgroundColor: r.fullførtIdag ? "var(--ink)" : "transparent",
-                  border: r.fullførtIdag ? "none" : "1.8px solid #D8D3C8",
-                  color: "white",
+                  border: r.fullførtIdag ? "none" : "1.8px solid var(--sirkel)",
+                  color: "var(--surface)",
                   fontSize: 12,
                 }}
               >

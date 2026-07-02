@@ -46,7 +46,7 @@ export default function LeggTilTanke({ itemId }: { itemId: number }) {
         className="w-full rounded-[16px] py-3 text-sm font-medium transition-opacity disabled:opacity-30 min-h-[44px]"
         style={{
           backgroundColor: "var(--ink)",
-          color: "white",
+          color: "var(--surface)",
         }}
       >
         {laster ? "Lagrer…" : "Legg til tanke"}

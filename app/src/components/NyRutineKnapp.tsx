@@ -45,7 +45,7 @@ export default function NyRutineKnapp() {
           width: 36,
           height: 36,
           backgroundColor: "var(--ink)",
-          color: "white",
+          color: "var(--surface)",
         }}
       >
         +
@@ -105,7 +105,7 @@ export default function NyRutineKnapp() {
                   type="submit"
                   disabled={!navn.trim() || laster}
                   className="flex-1 rounded-[14px] py-3 text-sm font-medium disabled:opacity-30 min-h-[44px]"
-                  style={{ backgroundColor: "var(--ink)", color: "white" }}
+                  style={{ backgroundColor: "var(--ink)", color: "var(--surface)" }}
                 >
                   {laster ? "Lagrer…" : "Legg til"}
                 </button>

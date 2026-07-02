@@ -75,7 +75,7 @@ export default function DetSomHaster({ oppgaver: init }: { oppgaver: Oppgave[] }
                   borderRadius: "50%",
                   border: ferdige.has(o.id)
                     ? "1.8px solid #C28568"
-                    : "1.8px solid #D8D3C8",
+                    : "1.8px solid var(--sirkel)",
                   backgroundColor: ferdige.has(o.id) ? "#C28568" : "transparent",
                   transition: "background-color 0.15s ease, border-color 0.15s ease",
                 }}

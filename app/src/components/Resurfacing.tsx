@@ -27,7 +27,7 @@ export default function Resurfacing({ item }: { item: LibraryItem | null }) {
   return (
     <section
       className="rounded-[22px] px-5 py-5"
-      style={{ backgroundColor: "#EBE6DB" }}
+      style={{ backgroundColor: "var(--kort-tone)" }}
     >
       <div className="flex items-baseline justify-between mb-3">
         <p

@@ -305,7 +305,7 @@ export default function BibliiotekTabs({
                 href={`/bibliotek/${s.id}`}
                 className="block px-4 py-4 rounded-[22px] transition-opacity active:opacity-70"
                 style={{
-                  backgroundColor: "#EBE6DB",
+                  backgroundColor: "var(--kort-tone)",
                   border: "1px solid var(--border)",
                 }}
               >

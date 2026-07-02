@@ -101,7 +101,7 @@ export default async function BibliotekDetaljSide({
         {item.type === "sitat" && (
           <div
             className="rounded-[22px] px-5 py-5"
-            style={{ backgroundColor: "#EBE6DB" }}
+            style={{ backgroundColor: "var(--kort-tone)" }}
           >
             <p
               className="text-base leading-relaxed"

@@ -76,7 +76,7 @@ export default function Topp3({ oppgaver: init }: { oppgaver: Oppgave[] }) {
                   borderRadius: "50%",
                   border: ferdige.has(o.id)
                     ? "1.8px solid var(--hest)"
-                    : "1.8px solid #D8D3C8",
+                    : "1.8px solid var(--sirkel)",
                   backgroundColor: ferdige.has(o.id) ? "var(--hest)" : "transparent",
                   transition: "background-color 0.15s ease, border-color 0.15s ease",
                 }}

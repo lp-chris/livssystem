@@ -163,7 +163,7 @@ export default function OppgaveDetalj({
                 backgroundColor:
                   oppgave.prioritet === p ? "var(--ink)" : "var(--surface)",
                 color:
-                  oppgave.prioritet === p ? "white" : "var(--ink-3)",
+                  oppgave.prioritet === p ? "var(--surface)" : "var(--ink-3)",
                 border: "1px solid var(--border)",
               }}
             >
@@ -258,7 +258,7 @@ export default function OppgaveDetalj({
               className="px-4 py-2 rounded-full text-sm min-h-[44px] transition-all"
               style={{
                 backgroundColor: oppgave.projectId === null ? "var(--ink)" : "var(--surface)",
-                color: oppgave.projectId === null ? "white" : "var(--ink-3)",
+                color: oppgave.projectId === null ? "var(--surface)" : "var(--ink-3)",
                 border: "1px solid var(--border)",
               }}
             >
@@ -276,7 +276,7 @@ export default function OppgaveDetalj({
                   className="px-4 py-2 rounded-full text-sm min-h-[44px] transition-all"
                   style={{
                     backgroundColor: oppgave.projectId === p.id ? "var(--ink)" : "var(--surface)",
-                    color: oppgave.projectId === p.id ? "white" : "var(--ink-3)",
+                    color: oppgave.projectId === p.id ? "var(--surface)" : "var(--ink-3)",
                     border: "1px solid var(--border)",
                   }}
                 >
@@ -334,7 +334,7 @@ export default function OppgaveDetalj({
                 className="px-4 py-2 rounded-full text-sm font-medium min-h-[44px] transition-all"
                 style={{
                   backgroundColor: aktiv ? "var(--ink)" : "var(--surface)",
-                  color: aktiv ? "white" : "var(--ink-3)",
+                  color: aktiv ? "var(--surface)" : "var(--ink-3)",
                   border: "1px solid var(--border)",
                 }}
               >

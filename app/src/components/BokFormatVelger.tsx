@@ -34,7 +34,7 @@ export default function BokFormatVelger({
           className="flex-1 py-2 rounded-[14px] text-xs font-medium transition-all min-h-[44px]"
           style={{
             backgroundColor: format === f.verdi ? "var(--ink)" : "var(--surface)",
-            color: format === f.verdi ? "white" : "var(--muted)",
+            color: format === f.verdi ? "var(--surface)" : "var(--muted)",
             border: "1px solid var(--border)",
           }}
         >

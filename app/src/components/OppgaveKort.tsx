@@ -81,7 +81,7 @@ export default function OppgaveKort({ oppgave: init }: { oppgave: Oppgave }) {
               width: 22,
               height: 22,
               borderRadius: "50%",
-              border: gjort ? "1.8px solid var(--hest)" : "1.8px solid #D8D3C8",
+              border: gjort ? "1.8px solid var(--hest)" : "1.8px solid var(--sirkel)",
               backgroundColor: gjort ? "var(--hest)" : "transparent",
               transition: "background-color 0.15s ease, border-color 0.15s ease",
             }}

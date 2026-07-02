@@ -15,7 +15,32 @@
   --stall: #899A78;
   --hest: #BE9A55;
 
+  /* Avledede toner som må følge tema */
+  --sirkel: #D8D3C8;      /* uavhukede sirkler og tidsstriper */
+  --kort-lys: #FAF9F5;    /* kalenderkortet */
+  --kort-tone: #EBE6DB;   /* sitatkort og resurfacing */
+  --nav-bg: rgba(244, 242, 236, 0.94);
+
   --nav-h: 96px;
+}
+
+/* Mørk modus følger telefonens systeminnstilling — ingen egen bryter */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1B1A17;
+    --surface: #26241F;
+    --border: #33302A;
+    --ink: #EAE7DF;
+    --ink-2: #C9C5BB;
+    --ink-3: #98948A;
+    --muted: #736F66;
+    --card: #211F1B;
+
+    --sirkel: #403C35;
+    --kort-lys: #24221E;
+    --kort-tone: #2B2823;
+    --nav-bg: rgba(27, 26, 23, 0.94);
+  }
 }
 
 body {

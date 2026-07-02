@@ -29,7 +29,7 @@ export default function LeseStatusVelger({ id, status: init }: { id: number; sta
           className="flex-1 py-2 rounded-[14px] text-xs font-medium transition-all min-h-[44px]"
           style={{
             backgroundColor: status === s.verdi ? "var(--ink)" : "var(--surface)",
-            color: status === s.verdi ? "white" : "var(--muted)",
+            color: status === s.verdi ? "var(--surface)" : "var(--muted)",
             border: "1px solid var(--border)",
           }}
         >
