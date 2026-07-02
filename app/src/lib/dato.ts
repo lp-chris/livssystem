@@ -27,6 +27,19 @@ export function osloOffset(d: Date = new Date()): string {
   return offset || "+00:00";
 }
 
+// Hele dager siden en YYYY-MM-DD-dato (0 = i dag, negativ = frem i tid).
+export function dagerSiden(dato: string): number {
+  const ms = Date.parse(iDagOslo()) - Date.parse(dato);
+  return Math.round(ms / 86400000);
+}
+
+// Slipp-score: "forfalt i går" / "forfalt i N dager" for en forfalt frist.
+export function forfaltEtikett(forfall: string): string {
+  const n = dagerSiden(forfall);
+  if (n <= 0) return forfall;
+  return n === 1 ? "forfalt i går" : `forfalt i ${n} dager`;
+}
+
 // Klokketime (0–23) i Oslo akkurat nå. Serveren kjører i UTC,
 // så new Date().getHours() gir feil time på Railway.
 export function timeOslo(): number {

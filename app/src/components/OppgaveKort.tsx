@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { iDagOslo } from "@/lib/dato";
+import { iDagOslo, forfaltEtikett } from "@/lib/dato";
 
 type Oppgave = {
   id: number;
@@ -26,7 +26,7 @@ function forfallTekst(forfall: string | null): string {
   if (!forfall) return "";
   const iDag = iDagOslo();
   if (forfall === iDag) return "i dag";
-  if (forfall < iDag) return `${forfall} ⚠`;
+  if (forfall < iDag) return `${forfaltEtikett(forfall)} ⚠`;
   return forfall;
 }
 

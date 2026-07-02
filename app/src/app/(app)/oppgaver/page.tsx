@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { db } from "@/db";
 import { tasks, domains } from "@/db/schema";
 import { eq, asc, desc } from "drizzle-orm";
-import { iDagOslo } from "@/lib/dato";
+import { iDagOslo, forfaltEtikett } from "@/lib/dato";
 import OppgaveKort from "@/components/OppgaveKort";
 import NyOppgaveKnapp from "@/components/NyOppgaveKnapp";
 import Link from "next/link";
@@ -25,7 +25,8 @@ const PRIORITET_RANG: Record<string, number> = { høy: 0, normal: 1, lav: 2 };
 function forfallTekst(forfall: string | null): { tekst: string; farge: string } {
   if (!forfall) return { tekst: "Ingen frist", farge: "var(--muted)" };
   const iDag = iDagOslo();
-  if (forfall < iDag) return { tekst: `${forfall} ⚠`, farge: "#BE6B52" };
+  if (forfall < iDag)
+    return { tekst: `${forfaltEtikett(forfall)} ⚠`, farge: "#BE6B52" };
   if (forfall === iDag) return { tekst: "I dag", farge: "var(--hest)" };
   const d = new Date(forfall);
   return {

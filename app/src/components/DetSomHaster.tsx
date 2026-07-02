@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { iDagOslo } from "@/lib/dato";
+import { iDagOslo, forfaltEtikett } from "@/lib/dato";
 
 type Oppgave = {
   id: number;
@@ -14,7 +14,7 @@ function forfallEtikett(forfall: string | null): string {
   if (!forfall) return "";
   const iDag = iDagOslo();
   if (forfall === iDag) return "i dag";
-  if (forfall < iDag) return `${forfall} ⚠`;
+  if (forfall < iDag) return `${forfaltEtikett(forfall)} ⚠`;
   return forfall;
 }
 
