@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { hentKo, leggIKo, provSendKo } from "@/lib/fangstKo";
 
-type Fase = "lukket" | "venter" | "lytter" | "behandler" | "kvittering";
+type Fase = "lukket" | "venter" | "lytter" | "behandler" | "kvittering" | "ko-lagret";
 type Modus = "mikrofon" | "tekst";
 
 type Kvittering = {
@@ -26,6 +27,7 @@ export default function FangstOverlay() {
   const [tekstInput, setTekstInput] = useState("");
   const [kvittering, setKvittering] = useState<Kvittering | null>(null);
   const [feil, setFeil] = useState<string | null>(null);
+  const [ventende, setVentende] = useState(0);
 
   const transkriptRef = useRef("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,11 +55,28 @@ export default function FangstOverlay() {
   }, [router]);
 
   useEffect(() => {
-    if (fase === "kvittering") {
+    if (fase === "kvittering" || fase === "ko-lagret") {
       const timer = setTimeout(() => lukk(), 2500);
       return () => clearTimeout(timer);
     }
   }, [fase, lukk]);
+
+  // Offline-kø: prøv å sende ved app-start og når nettet kommer tilbake
+  useEffect(() => {
+    let aktiv = true;
+    async function tøm() {
+      const sendt = await provSendKo();
+      if (!aktiv) return;
+      setVentende(hentKo().length);
+      if (sendt > 0) router.refresh();
+    }
+    tøm();
+    window.addEventListener("online", tøm);
+    return () => {
+      aktiv = false;
+      window.removeEventListener("online", tøm);
+    };
+  }, [router]);
 
   // ESC for å lukke
   useEffect(() => {
@@ -84,9 +103,15 @@ export default function FangstOverlay() {
       setKvittering(data);
       harKvittering.current = true;
       setFase("kvittering");
-    } catch {
-      setFeil("Noe gikk galt. Prøv igjen.");
-      setFase("venter");
+    } catch (e) {
+      // TypeError fra fetch = nettverksfeil (ingen dekning) → lagre lokalt
+      if (e instanceof TypeError) {
+        setVentende(leggIKo(tekst.trim()));
+        setFase("ko-lagret");
+      } else {
+        setFeil("Noe gikk galt. Prøv igjen.");
+        setFase("venter");
+      }
     }
   }
 
@@ -168,6 +193,23 @@ export default function FangstOverlay() {
         }}
       >
         ⊕
+        {ventende > 0 && (
+          <span
+            className="absolute flex items-center justify-center rounded-full text-[11px] font-bold"
+            style={{
+              top: -2,
+              right: -2,
+              minWidth: 20,
+              height: 20,
+              padding: "0 5px",
+              backgroundColor: "var(--hest)",
+              color: "white",
+            }}
+            title={`${ventende} fangster venter på nett`}
+          >
+            {ventende}
+          </span>
+        )}
       </button>
     );
   }
@@ -191,6 +233,8 @@ export default function FangstOverlay() {
               ? "ANALYSERER"
               : fase === "kvittering"
               ? "LAGT TIL"
+              : fase === "ko-lagret"
+              ? "LAGRET LOKALT"
               : modus === "mikrofon"
               ? "FANGST"
               : "SKRIV"}
@@ -232,6 +276,36 @@ export default function FangstOverlay() {
                   style={{ color: "rgba(255,255,255,0.5)" }}
                 >
                   {(kvittering.capture.tittel ?? kvittering.capture.innhold ?? "").slice(0, 80)}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Offline: lagret i kø */}
+          {fase === "ko-lagret" && (
+            <div className="flex flex-col items-center gap-4 text-center">
+              <div
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: 80,
+                  height: 80,
+                  backgroundColor: "rgba(190, 154, 85, 0.2)",
+                  color: "#BE9A55",
+                  fontSize: 36,
+                }}
+              >
+                ⏳
+              </div>
+              <div>
+                <p className="text-white text-lg font-medium mb-1">
+                  Ingen nett — lagret på telefonen
+                </p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "rgba(255,255,255,0.5)" }}
+                >
+                  Sendes automatisk når du er på nett igjen
+                  {ventende > 1 ? ` (${ventende} i kø)` : ""}
                 </p>
               </div>
             </div>

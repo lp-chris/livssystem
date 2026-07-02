@@ -119,22 +119,22 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 - ✅ **Tilbakevendende oppgaver** — Implementert: `tilbakevendendeRegel` på oppgaver, og `/api/oppgaver/[id]` oppretter neste forekomst når en tilbakevendende oppgave fullføres.
 - ✅ **Fangst-korreksjon** — Implementert 2026-06-23. Trykk på en rad i «Nylig fanget» → flytt til riktig domene (Meg/Oss/Stall/Hest eller uten). `PATCH /api/capture/[id]` oppdaterer både elementet (via `rutetTil`) og fangst-raden.
 - **"Denne uken"-modus** — Ukesplanlegging: dra oppgaver inn i en "denne uken"-bøtte. Vises på hjemskjermen i stedet for/under topp 3. Mer fleksibel enn fast topp 3.
-- **Slipp-score** — Vis antall dager en oppgave har ligget forfalt. Gjør det åpenbart hva som aldri blir gjort og bør slettes eller arkiveres.
+- ✅ **Slipp-score** — Implementert 2026-07-02. Forfalte oppgaver viser «forfalt i X dager ⚠» (`forfaltEtikett()` i `lib/dato.ts`).
 
 ### Hestespesifikt
 - **Helselogg per hest** — Notatfelt koblet til en hest-entitet: skoing, vaksine, vet-besøk, hvileperioder. Tidslinje-visning. Mer målrettet enn å drukne dette i oppgaver.
 - **Treningslogg** — Logg trening per hest med dato, type og kommentar. Graf over treningsfrekvens. Kan bygges på bibliotek-strukturen.
 
 ### Journal og bibliotek
-- **Søk på tvers (bibliotek-UX del B)** — Utvid det eksisterende `/sok` + `/api/sok` til også å dekke journaloppføringer (`journal_entries`/`journal_answers`), ikke bare notater/sitater/bøker. Neste steg etter journal-navigasjon (del A, gjort 2026-07-01).
-- **Favoritt-filter i biblioteket (bibliotek-UX del C)** — Klient-side filter for å vise kun favoritt-merkede elementer. Ingen schema-endring; `favoritt` lastes allerede. Den lille poleringen til slutt.
+- ✅ **Søk på tvers (bibliotek-UX del B)** — Implementert 2026-07-02. `/sok` dekker nå også den daglige journalen.
+- ✅ **Favoritt-filter i biblioteket (bibliotek-UX del C)** — Implementert 2026-07-02. «★ Favoritter»-pille i alle tre faner.
 - **"Du skrev dette i går"** — Øverst på journalsiden: gårsdagens post som stille refleksjonspåminnelse.
 - **Bok-fremgang** — Logg sider eller prosent mens du leser. Fremgangsbar på bokkortene.
 
 ### Hjemskjerm og innsikt
 - **Domene-balanse** — Visuelt hint (fire fargede streker) som viser om ett domene har vært ignorert en stund. Eks: "Du har ikke gjort noe i Meg på 9 dager."
 - **Ukesgjennomgang** — Dedikert fredag-visning: hva ble fullført, hva ble ikke gjort, hva nærmer seg neste uke. Ingen AI — aggregert data presentert pent.
-- **Mørk modus** — Praktisk i stall-kontekst om kvelden eller tidlig morgen.
+- ✅ **Mørk modus** — Implementert 2026-07-02. Følger systeminnstillingen (`prefers-color-scheme`), ingen egen bryter.
 
 ### Mer ambisiøst
 - **AI ukesoppsummering på Pushover** — Automatisk søndag kveld via cron: "5 oppgaver fullført, 3 forfalt, 2 milepæler nærmer seg."
@@ -152,6 +152,13 @@ Senere (IKKE nå): chat-med-data, folk/CRM, inventar, innhold, Kindle-import.
 ---
 
 ## Siste endringer
+
+### 2026-07-02 (kveld) — godkjent batch: slipp-score, favoritt-filter, søk del B, mørk modus, offline-kø
+- **Slipp-score på oppgaver** — Forfalte oppgaver viser nå «forfalt i X dager ⚠» i stedet for bare rå dato, så det blir synlig hva som skurer og bør slettes. Nye hjelpere i `lib/dato.ts`: `dagerSiden()` og `forfaltEtikett()` (1 dag = «forfalt i går»). Brukes i `OppgaveKort.tsx`, `DetSomHaster.tsx` og oppgavesidens desktop-tabell.
+- **Favoritt-filter i biblioteket (del C)** — «★ Favoritter»-pille i alle tre faner i `BibliiotekTabs.tsx` (vises kun når fanen faktisk har favoritter). Klient-side state (`kunFavoritter`), nullstilles ved fanebytte, kombineres med bok-status-filteret. Ingen schema-endring.
+- **Søk dekker journalen (del B)** — `/api/sok` søker nå også i `journal_answers` (ilike, join mot `journal_entries`, dedup per dato, nyeste først, maks 20) og returnerer egen `journal`-liste. `/sok`-siden viser en Journal-seksjon med formatert dato + utdrag rundt treffet (`utdragRundtTreff`), lenker til `/journal/[dato]`. Bonusfiks: gamle arkiv-poster (`library_items` type=`journal`) i bibliotek-treff lenker nå riktig til `/journal/arkiv/[id]` (før: død `/bibliotek/[id]`-lenke) og merkes «Journal (arkiv)».
+- **Mørk modus** — Følger telefonens systeminnstilling via `@media (prefers-color-scheme: dark)` i `globals.css`; ingen egen bryter å vedlikeholde. Alle temavariabler får mørke verdier (varm mørk palett: bg `#1B1A17`, card `#211F1B`, lys ink); domenefargene er mid-tones og beholdes. Nye variabler for toner som før var hardkodet: `--sirkel` (uavhukede sirkler/tidsstriper, før `#D8D3C8`/`#DAD5C9`), `--kort-lys` (kalenderkort, før `#FAF9F5`), `--kort-tone` (sitatkort/resurfacing, før `#EBE6DB`), `--nav-bg` (bunn-nav-blur). Viktig mønster: hvit tekst på `var(--ink)`-bakgrunn (aktive piller/knapper) byttet til `var(--surface)` — ellers blir det hvitt-på-lyst når `--ink` blir lys i mørk modus. `layout.tsx` `themeColor` er nå media-basert. `manifest.json` (splash) kan ikke følge tema og står urørt. Fangst-overlayet var allerede mørkt og er uendret.
+- **Offline-kø for fangst** — Fangst uten dekning feiler ikke lenger stille. Ny klientmodul `lib/fangstKo.ts`: localStorage-kø (`fangst-ko`) med `leggIKo`/`hentKo`/`provSendKo` (sender eldst først, stopper ved første feil, guard mot dobbeltkjøring). `FangstOverlay.tsx`: nettverksfeil (TypeError fra fetch) → køen + egen «Ingen nett — lagret på telefonen»-kvittering (⏳); serverfeil viser fortsatt vanlig feilmelding. Køen tømmes automatisk ved app-start og på `online`-event (med `router.refresh()` etter vellykket sending), og fangst-knappen viser badge med antall ventende.
 
 ### 2026-07-02
 - **Journal-fangst går nå til dagens daglige journal** — Tidligere opprettet en journal-klassifisert fangst en rad i det gamle fritekst-arkivet (`library_items` type=`journal`), som bare er lesbart under `/journal/arkiv` — en innsnakket refleksjon havnet altså utenfor den nye daglige journalen. Nå gjør `case "journal"` i `api/capture/route.ts` get-or-create av dagens `journal_entries`-rad (`iDagOslo()`) og legger teksten til i `journal_answers` under ny nøkkel `capture.reflection` — flere fangster samme dag skilles med tomlinje (`\n\n`). Vises som egen «Refleksjoner»-seksjon: redigerbar textarea i `JournalDagen.tsx` (kun synlig når noe er fanget — en fangst-løs dag forblir rolig) og som kort per avsnitt i lese-visningen `/journal/[dato]`. `capture.reflection` lagt til i `GYLDIGE_NOKLER` i `api/journal/[id]/route.ts`, og utdraget i `/journal/alle` bruker refleksjonen som siste fallback. Domene-korreksjon: journaloppføringer har ikke domene, så `PATCH /api/capture/[id]` returnerer 400 for type `journal` (fjernet fra libraryItems-casen) og `SisteFangster.tsx` setter `kanFlyttes=false` for journal-fangster. Gamle arkiv-poster er urørt og fortsatt lesbare.
