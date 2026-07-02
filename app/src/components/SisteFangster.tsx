@@ -68,7 +68,9 @@ export default function SisteFangster({ init }: { init: Fangst[] }) {
       <div className="space-y-2">
         {fangster.map((f) => {
           const åpen = åpenId === f.id;
-          const kanFlyttes = Boolean(f.rutetTil?.id);
+          // Journal-fangster ligger i dagens journal (uten domene) og kan ikke flyttes
+          const kanFlyttes =
+            Boolean(f.rutetTil?.id) && f.rutetTil?.type !== "journal";
           return (
             <div
               key={f.id}

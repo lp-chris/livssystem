@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@/db";
-import { captures, tasks, routines, libraryItems, domains } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  captures,
+  tasks,
+  routines,
+  libraryItems,
+  domains,
+  journalEntries,
+  journalAnswers,
+} from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import { loggApiBruk } from "@/lib/apiBruk";
 import { iDagOslo } from "@/lib/dato";
 
@@ -182,18 +190,51 @@ async function lagreRutet(tolket: Record<string, unknown>) {
     }
 
     case "journal": {
-      const [rad] = await db
-        .insert(libraryItems)
-        .values({
-          type: "journal",
-          domainId,
-          tittel: tolket.tittel ? String(tolket.tittel) : null,
-          innhold: tolket.notat
-            ? `${String(tolket.tittel)}\n\n${String(tolket.notat)}`
-            : String(tolket.tittel),
-        })
-        .returning();
-      return { type: "journal", id: rad.id };
+      // Til dagens rad i den daglige journalen (ikke det gamle arkivet).
+      // Hver fangst legges til som et nytt avsnitt under "capture.reflection".
+      const dato = iDagOslo();
+      let [entry] = await db
+        .select()
+        .from(journalEntries)
+        .where(eq(journalEntries.dato, dato));
+      if (!entry) {
+        [entry] = await db.insert(journalEntries).values({ dato }).returning();
+      }
+
+      const tekst = tolket.notat
+        ? `${String(tolket.tittel)}\n\n${String(tolket.notat)}`
+        : String(tolket.tittel);
+
+      const [eksisterende] = await db
+        .select()
+        .from(journalAnswers)
+        .where(
+          and(
+            eq(journalAnswers.entryId, entry.id),
+            eq(journalAnswers.questionKey, "capture.reflection")
+          )
+        );
+      if (eksisterende) {
+        const samlet = eksisterende.svar
+          ? `${eksisterende.svar}\n\n${tekst}`
+          : tekst;
+        await db
+          .update(journalAnswers)
+          .set({ svar: samlet })
+          .where(eq(journalAnswers.id, eksisterende.id));
+      } else {
+        await db.insert(journalAnswers).values({
+          entryId: entry.id,
+          questionKey: "capture.reflection",
+          svar: tekst,
+        });
+      }
+      await db
+        .update(journalEntries)
+        .set({ oppdatert: new Date() })
+        .where(eq(journalEntries.id, entry.id));
+
+      return { type: "journal", id: entry.id };
     }
 
     default:

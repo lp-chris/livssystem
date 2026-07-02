@@ -77,12 +77,22 @@ export default async function JournalDagSide({
   const greatDay = (svar["morning.great_day"] ?? "").trim();
   const affirmation = (svar["morning.affirmation"] ?? "").trim();
   const kveld = (svar["evening.went_well"] ?? "").trim();
+  // Fangst-refleksjoner: hvert avsnitt er én innsnakket/innskrevet fangst
+  const refleksjoner = (svar["capture.reflection"] ?? "")
+    .split("\n\n")
+    .map((a) => a.trim())
+    .filter(Boolean);
 
   const maaned = dato.slice(0, 7);
   const erIDag = dato === iDagOslo();
 
   const harInnhold =
-    gratitude.length > 0 || greatDay || affirmation || kveld || bildeUrl;
+    gratitude.length > 0 ||
+    greatDay ||
+    affirmation ||
+    kveld ||
+    bildeUrl ||
+    refleksjoner.length > 0;
 
   return (
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-2xl md:px-10 md:pt-10">
@@ -152,6 +162,16 @@ export default async function JournalDagSide({
       {affirmation && (
         <Seksjon tittel="Dagens affirmasjon">
           <Tekstkort tekst={affirmation} />
+        </Seksjon>
+      )}
+
+      {refleksjoner.length > 0 && (
+        <Seksjon tittel="Refleksjoner">
+          <div className="space-y-2">
+            {refleksjoner.map((tekst, i) => (
+              <Tekstkort key={i} tekst={tekst} />
+            ))}
+          </div>
         </Seksjon>
       )}
 

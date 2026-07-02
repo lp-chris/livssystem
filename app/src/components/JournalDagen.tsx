@@ -70,6 +70,10 @@ export default function JournalDagen({
   const harKveld = (svar["evening.went_well"] ?? "").trim().length > 0;
   const [visKveld, setVisKveld] = useState(harKveld);
 
+  // Refleksjoner fanget via tale/tekst (capture). Vises kun når det finnes noe,
+  // så en dag uten fangster forblir rolig.
+  const harRefleksjoner = (svar["capture.reflection"] ?? "").trim().length > 0;
+
   // Sørg for at dagens entry finnes; opprett først ved første lagring.
   async function sikreEntry(): Promise<number | null> {
     if (entryIdRef.current) return entryIdRef.current;
@@ -297,6 +301,25 @@ export default function JournalDagen({
           onChange={velgBilde}
         />
       </section>
+
+      {/* Refleksjoner fra fangst — kun synlig når noe er fanget i dag */}
+      {harRefleksjoner && (
+        <section className="mb-7">
+          <h2
+            className="text-[11px] font-semibold uppercase mb-2.5"
+            style={{ letterSpacing: "0.1em", color: "var(--muted)" }}
+          >
+            Refleksjoner
+          </h2>
+          <textarea
+            defaultValue={svar["capture.reflection"] ?? ""}
+            onBlur={(e) => lagreSvar("capture.reflection", e.target.value)}
+            rows={5}
+            className="w-full rounded-[14px] px-4 py-3 text-[15px] leading-relaxed resize-none focus:outline-none"
+            style={feltStil}
+          />
+        </section>
+      )}
 
       {/* Sted (valgfritt) */}
       <section className="mb-7">

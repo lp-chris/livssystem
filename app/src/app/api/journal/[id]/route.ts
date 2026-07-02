@@ -8,6 +8,7 @@ const GYLDIGE_NOKLER = [
   "morning.great_day",
   "morning.affirmation",
   "evening.went_well",
+  "capture.reflection",
 ];
 
 // PATCH: autosave. Tar enten { questionKey, svar } (upsert i journal_answers)

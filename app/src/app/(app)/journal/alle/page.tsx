@@ -49,6 +49,7 @@ export default async function AlleJournalSide() {
       (s["morning.great_day"] ?? "").trim() ||
       (s["morning.affirmation"] ?? "").trim() ||
       (s["evening.went_well"] ?? "").trim() ||
+      (s["capture.reflection"] ?? "").split("\n").map((l) => l.trim()).filter(Boolean)[0] ||
       ""
     );
   }

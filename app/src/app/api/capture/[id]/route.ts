@@ -54,12 +54,18 @@ export async function PATCH(
     case "notat":
     case "sitat":
     case "bok":
-    case "journal":
       await db
         .update(libraryItems)
         .set({ domainId })
         .where(eq(libraryItems.id, rutet.id));
       break;
+    case "journal":
+      // Nye journal-fangster går til dagens journal_entries-rad,
+      // som ikke har domene — ingenting å flytte.
+      return NextResponse.json(
+        { feil: "Journaloppføringer har ikke domene" },
+        { status: 400 }
+      );
     default:
       return NextResponse.json(
         { feil: `Kan ikke flytte type ${rutet.type}` },
