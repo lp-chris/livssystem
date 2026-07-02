@@ -6,17 +6,29 @@ import Link from "next/link";
 
 type Oppgave = { id: number; tittel: string; forfall: string | null; prioritet: string };
 type BibliotekElement = { id: number; type: string; tittel: string | null; innhold: string | null; kilde: string | null; forfatter: string | null };
+type JournalTreff = { dato: string; utdrag: string };
 
 const TYPE_ETIKETT: Record<string, string> = {
   notat: "Notat",
   sitat: "Sitat",
   bok: "Bok",
+  journal: "Journal (arkiv)",
 };
+
+function formaterDato(dato: string): string {
+  return new Date(dato + "T12:00:00").toLocaleDateString("nb-NO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export default function SokSide() {
   const [spørring, setSpørring] = useState("");
   const [oppgaver, setOppgaver] = useState<Oppgave[]>([]);
   const [bibliotek, setBibliotek] = useState<BibliotekElement[]>([]);
+  const [journal, setJournal] = useState<JournalTreff[]>([]);
   const [laster, setLaster] = useState(false);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +43,7 @@ export default function SokSide() {
     if (spørring.length < 2) {
       setOppgaver([]);
       setBibliotek([]);
+      setJournal([]);
       return;
     }
     timerRef.current = setTimeout(async () => {
@@ -39,11 +52,17 @@ export default function SokSide() {
       const data = await res.json();
       setOppgaver(data.oppgaver ?? []);
       setBibliotek(data.bibliotek ?? []);
+      setJournal(data.journal ?? []);
       setLaster(false);
     }, 300);
   }, [spørring]);
 
-  const ingenResultater = spørring.length >= 2 && !laster && oppgaver.length === 0 && bibliotek.length === 0;
+  const ingenResultater =
+    spørring.length >= 2 &&
+    !laster &&
+    oppgaver.length === 0 &&
+    bibliotek.length === 0 &&
+    journal.length === 0;
 
   return (
     <main className="pb-40 px-4 pt-12 max-w-md mx-auto md:max-w-3xl md:px-10 md:pt-10">
@@ -69,7 +88,7 @@ export default function SokSide() {
             type="search"
             value={spørring}
             onChange={(e) => setSpørring(e.target.value)}
-            placeholder="Søk i oppgaver og bibliotek…"
+            placeholder="Søk i oppgaver, bibliotek og journal…"
             className="flex-1 bg-transparent text-sm focus:outline-none"
             style={{ color: "var(--ink)" }}
           />
@@ -127,6 +146,45 @@ export default function SokSide() {
           </section>
         )}
 
+        {journal.length > 0 && (
+          <section>
+            <h2
+              className="text-[11px] font-bold uppercase mb-3"
+              style={{ letterSpacing: "0.12em", color: "var(--muted)" }}
+            >
+              Journal ({journal.length})
+            </h2>
+            <div className="space-y-2">
+              {journal.map((j) => (
+                <Link
+                  key={j.dato}
+                  href={`/journal/${j.dato}`}
+                  className="flex flex-col px-4 py-3 rounded-[18px] min-h-[56px] justify-center"
+                  style={{
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  <p
+                    className="text-sm font-medium capitalize"
+                    style={{ color: "var(--ink)" }}
+                  >
+                    {formaterDato(j.dato)}
+                  </p>
+                  {j.utdrag && (
+                    <p
+                      className="text-xs mt-0.5 truncate"
+                      style={{ color: "var(--ink-3)" }}
+                    >
+                      {j.utdrag}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {bibliotek.length > 0 && (
           <section>
             <h2
@@ -139,7 +197,11 @@ export default function SokSide() {
               {bibliotek.map((b) => (
                 <Link
                   key={b.id}
-                  href={`/bibliotek/${b.id}`}
+                  href={
+                    b.type === "journal"
+                      ? `/journal/arkiv/${b.id}`
+                      : `/bibliotek/${b.id}`
+                  }
                   className="flex flex-col px-4 py-3 rounded-[18px] min-h-[56px] justify-center"
                   style={{
                     backgroundColor: "var(--card)",
